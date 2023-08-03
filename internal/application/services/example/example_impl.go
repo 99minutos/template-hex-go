@@ -2,12 +2,12 @@ package example
 
 import (
 	"context"
-	ports "example-service/internal/adapters/ports"
+	ports2 "example-service/internal/application/ports"
 )
 
 type ExampleService struct {
 	globalCtx context.Context
-	exRep     ports.IExampleRepository
+	exRep     ports2.IExampleRepository
 }
 
 // implementacion del servicio, notese como el puerto es devuelto en NewExampleService
@@ -20,8 +20,8 @@ type ExampleService struct {
 // que este servicio funcione.
 func NewExampleService(
 	ctx context.Context,
-	exRep ports.IExampleRepository,
-) ports.IExampleService {
+	exRep ports2.IExampleRepository,
+) ports2.IExampleService {
 	return &ExampleService{
 		globalCtx: ctx,
 		exRep:     exRep,

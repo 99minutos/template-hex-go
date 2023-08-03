@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"example-service/internal/adapters/ports"
+	"example-service/internal/application/ports"
 	"example-service/internal/config"
 	driven_fiber "example-service/internal/infraestructure/driven/fiber"
 	"example-service/internal/infraestructure/driven/logger"

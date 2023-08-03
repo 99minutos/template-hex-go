@@ -2,7 +2,7 @@ package mongo
 
 import (
 	"context"
-	"example-service/internal/adapters/ports"
+	"example-service/internal/application/ports"
 	"example-service/internal/domain"
 	"example-service/internal/infraestructure/driven/logger"
 	"go.mongodb.org/mongo-driver/bson"

@@ -2,8 +2,7 @@ package main
 
 import (
 	"context"
-	"example-service/internal/adapters/repository/mongo"
-	services "example-service/internal/adapters/services/example"
+	services "example-service/internal/application/services/example"
 	"example-service/internal/config"
 	"example-service/internal/infraestructure/driven/cmux"
 	"example-service/internal/infraestructure/driven/envs"
@@ -12,6 +11,7 @@ import (
 	redisdriven "example-service/internal/infraestructure/driven/redis"
 	"example-service/internal/infraestructure/driven/tracer"
 	"example-service/internal/infraestructure/driver/rest"
+	"example-service/internal/infraestructure/repository/mongo"
 )
 
 func main() {
