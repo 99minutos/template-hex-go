@@ -1,7 +1,7 @@
 package cmux
 
 import (
-	"example-service/internal/infraestructure/driven/logger"
+	"example-service/internal/infraestructure/adapters/driven/logger"
 	"github.com/soheilhy/cmux"
 	"net"
 )

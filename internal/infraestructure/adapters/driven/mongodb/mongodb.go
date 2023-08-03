@@ -3,8 +3,7 @@ package mongodbrepo
 import (
 	"context"
 	"example-service/internal/config"
-	"example-service/internal/infraestructure/driven/logger"
-
+	"example-service/internal/infraestructure/adapters/driven/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 

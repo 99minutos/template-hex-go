@@ -3,7 +3,7 @@ package example
 import (
 	"context"
 	"example-service/internal/domain"
-	"example-service/internal/infraestructure/driven/tracer"
+	"example-service/internal/infraestructure/adapters/driven/tracer"
 	"fmt"
 )
 

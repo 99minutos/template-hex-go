@@ -2,7 +2,7 @@ package redis
 
 import (
 	"context"
-	"example-service/internal/infraestructure/driven/logger"
+	"example-service/internal/infraestructure/adapters/driven/logger"
 	"fmt"
 	"github.com/redis/go-redis/extra/redisotel/v9"
 	"github.com/redis/go-redis/v9"

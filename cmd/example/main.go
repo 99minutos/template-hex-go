@@ -2,16 +2,16 @@ package main
 
 import (
 	"context"
+	"example-service/internal/application/repository/mongo"
 	services "example-service/internal/application/services/example"
 	"example-service/internal/config"
-	"example-service/internal/infraestructure/driven/cmux"
-	"example-service/internal/infraestructure/driven/envs"
-	"example-service/internal/infraestructure/driven/logger"
-	mongodriven "example-service/internal/infraestructure/driven/mongodb"
-	redisdriven "example-service/internal/infraestructure/driven/redis"
-	"example-service/internal/infraestructure/driven/tracer"
-	"example-service/internal/infraestructure/driver/rest"
-	"example-service/internal/infraestructure/repository/mongo"
+	"example-service/internal/infraestructure/adapters/driven/cmux"
+	"example-service/internal/infraestructure/adapters/driven/envs"
+	"example-service/internal/infraestructure/adapters/driven/logger"
+	mongodriven "example-service/internal/infraestructure/adapters/driven/mongodb"
+	redisdriven "example-service/internal/infraestructure/adapters/driven/redis"
+	"example-service/internal/infraestructure/adapters/driven/tracer"
+	"example-service/internal/infraestructure/adapters/driver/rest"
 )
 
 func main() {

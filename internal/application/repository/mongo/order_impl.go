@@ -4,7 +4,7 @@ import (
 	"context"
 	"example-service/internal/application/ports"
 	"example-service/internal/domain"
-	"example-service/internal/infraestructure/driven/logger"
+	"example-service/internal/infraestructure/adapters/driven/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.opentelemetry.io/otel/attribute"
