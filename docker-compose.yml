@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: ${COMPOSE_PROJECT_NAME}-app
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - .:/src
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+
+  mongodb:
+    container_name: ${COMPOSE_PROJECT_NAME}-mongodb
+    image: mongo:5.0
+    environment:
+      - MONGO_INITDB_DATABASE=app
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    ports:
+      - 27017:27017
+    volumes:
+      - .mongodb:/data/db
+
+  redis:
+    container_name: ${COMPOSE_PROJECT_NAME}-redis
+    image: redis:6.2.13-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - .redis:/data
