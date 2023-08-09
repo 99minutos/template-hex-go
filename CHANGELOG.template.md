@@ -1,6 +1,6 @@
 # version - release date
 
-Resume of changes in the project.
+## Resume of changes in the project
 
 ### Added
 
