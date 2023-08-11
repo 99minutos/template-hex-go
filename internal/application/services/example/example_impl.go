@@ -3,9 +3,11 @@ package example
 import (
 	"context"
 	ports2 "example-service/internal/application/ports"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type ExampleService struct {
+	tracer    trace.Tracer
 	globalCtx context.Context
 	exRep     ports2.IExampleRepository
 }
@@ -21,9 +23,11 @@ type ExampleService struct {
 func NewExampleService(
 	ctx context.Context,
 	exRep ports2.IExampleRepository,
+	tracer trace.Tracer,
 ) ports2.IExampleService {
 	return &ExampleService{
 		globalCtx: ctx,
 		exRep:     exRep,
+		tracer:    tracer,
 	}
 }
