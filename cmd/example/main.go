@@ -35,7 +35,7 @@ func main() {
 	exRep := mongo.NewExampleRepository("examples", mongodriven.GetDatabase(), tracerInstance)
 
 	// Initialize services
-	service := services.NewExampleService(ctx, exRep)
+	service := services.NewExampleService(ctx, exRep, tracerInstance)
 
 	// Initialize the rest server
 	restServer := rest.NewRestHandler(service)

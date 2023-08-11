@@ -31,12 +31,12 @@ func Setup(ctx context.Context, cfg *config.AppConfig) (trace.Tracer, error) {
 
 	exporter, err := getExporter(ctx, cfg)
 	if err != nil {
-		return nil, fmt.Errorf("failed creating tracer: %w", err)
+		logger.Warnf("failed creating tracer exporter: %v", err.Error())
 	}
 
 	res, err := newResource(ctx, cfg)
 	if err != nil {
-		return nil, fmt.Errorf("failed creating tracer: %w", err)
+		logger.Warnf("failed creating tracer resource: %v", err.Error())
 	}
 
 	provider := sdktrace.NewTracerProvider(
