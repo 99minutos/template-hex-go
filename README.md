@@ -76,62 +76,62 @@ Other installation methods: [Download Golang](https://go.dev/dl/)
 <service-name>
 .
 ├── build
-│ ├── cloudbuild.yaml
-│ └── Dockerfile
+│   ├── cloudbuild.yaml
+│   └── Dockerfile
 ├── CHANGELOG.md
 ├── CHANGELOG.template.md
 ├── cmd
-│ └── example
-│     └── main.go
+│   └── example
+│       └── main.go
 ├── docker-compose.yml
 ├── Dockerfile.dev
 ├── docs
-│ ├── MODEL.md
-│ ├── STATE-MACHINE.md
-│ └── TRANSITIONS.md
+│   ├── MODEL.md
+│   ├── STATE-MACHINE.md
+│   └── TRANSITIONS.md
 ├── go.mod
 ├── go.sum
 ├── internal
-│ ├── adapters
-│ │ ├── ports
-│ │ │ ├── example_repo_iface.go
-│ │ │ └── example_service_iface.go
-│ │ ├── repository
-│ │ │ └── mongo
-│ │ │     └── order_impl.go
-│ │ └── services
-│ │     └── example
-│ │         ├── example_handlers_impl.go
-│ │         └── example_impl.go
-│ ├── config
-│ │ ├── config.go
-│ │ └── helpers.go
-│ ├── domain
-│ │ └── example.go
-│ └── infraestructure
-│     ├── driven
-│     │ ├── cmux
-│     │ │ └── cmux.go
-│     │ ├── envs
-│     │ │ └── config.go
-│     │ ├── fiber
-│     │ │ └── fiber.go
-│     │ ├── logger
-│     │ │ └── logger.go
-│     │ ├── mongodb
-│     │ │ └── mongodb.go
-│     │ ├── redis
-│     │ │ └── cache.go
-│     │ └── tracer
-│     │     └── tracer.go
-│     └── driver
-│         ├── grpc
-│         │ ├── domain_to_grpc.go
-│         │ ├── handlers.go
-│         │ └── server.go
-│         └── rest
-│             └── handlers.go
-├── logistics-source-of-truth.iml
+│   ├── application
+│   │   ├── ports
+│   │   │   ├── example_repo_iface.go
+│   │   │   └── example_service_iface.go
+│   │   ├── repository
+│   │   │   └── mongo
+│   │   │       └── order_impl.go
+│   │   └── services
+│   │       └── example
+│   │           ├── example_handlers_impl.go
+│   │           └── example_impl.go
+│   ├── config
+│   │   ├── config.go
+│   │   └── helpers.go
+│   ├── domain
+│   │   └── example.go
+│   └── infraestructure
+│       └── adapters
+│           ├── driven
+│           │   ├── cmux
+│           │   │   └── cmux.go
+│           │   ├── envs
+│           │   │   └── config.go
+│           │   ├── fiber
+│           │   │   └── fiber.go
+│           │   ├── logger
+│           │   │   └── logger.go
+│           │   ├── mongodb
+│           │   │   └── mongodb.go
+│           │   ├── redis
+│           │   │   └── cache.go
+│           │   └── tracer
+│           │       └── tracer.go
+│           └── driver
+│               ├── grpc
+│               │   ├── domain_to_grpc.go
+│               │   ├── handlers.go
+│               │   └── server.go
+│               └── rest
+│                   └── handlers.go
 ├── Makefile
 └── README.md
 ```

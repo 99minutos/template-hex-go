@@ -32,3 +32,9 @@ gen
 # Docker Compose
 .mongodb
 .redis
+
+
+.history
+notas.md
+__debug*
+github-user.sh
