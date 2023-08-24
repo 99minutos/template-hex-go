@@ -32,6 +32,7 @@ func Setup(ctx context.Context, cfg *config.AppConfig) (trace.Tracer, error) {
 	exporter, err := getExporter(ctx, cfg)
 	if err != nil {
 		logger.Warnf("failed creating tracer exporter: %v", err.Error())
+		exporter = &CustomExporter{}
 	}
 
 	res, err := newResource(ctx, cfg)
@@ -63,6 +64,16 @@ func Setup(ctx context.Context, cfg *config.AppConfig) (trace.Tracer, error) {
 	)
 	otel.SetTracerProvider(TelemetryProvider)
 	return Tracer, nil
+}
+
+type CustomExporter struct{}
+
+func (ce *CustomExporter) ExportSpans(ctx context.Context, spans []sdktrace.ReadOnlySpan) error {
+	return nil
+}
+
+func (ce *CustomExporter) Shutdown(ctx context.Context) error {
+	return nil
 }
 
 func getExporter(ctx context.Context, cfg *config.AppConfig) (sdktrace.SpanExporter, error) {
