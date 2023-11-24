@@ -40,7 +40,7 @@ func (r *RestHandler) Start(is net.Listener) {
 }
 
 func (r *RestHandler) GetExample(fctx *fiber.Ctx) error {
-	order, err := r.exService.GetExample(fctx.Context(), fctx.Params("exampleId"))
+	order, err := r.exService.GetExample(fctx.Context(), fctx.Params("trackingId"))
 	if err != nil {
 		fctx.Status(fiber.StatusNotFound)
 		return fctx.JSON(RestError{Cause: err.Error()})
@@ -50,13 +50,9 @@ func (r *RestHandler) GetExample(fctx *fiber.Ctx) error {
 }
 
 func (r *RestHandler) CreateExample(fctx *fiber.Ctx) error {
-	err := r.exService.CreateExample(fctx.Context())
+	order, err := r.exService.CreateExample(fctx.Context())
 	if err != nil {
-
 		return nil
 	}
-
-	fctx.SendStatus(200)
-	fctx.SendString("OK")
-	return nil
+	return fctx.Status(fiber.StatusCreated).JSON(order)
 }

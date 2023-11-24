@@ -5,24 +5,24 @@ Microservice designed to control 99minutos something
 ## Table of Contents
 
 - [:writing\_hand: ](#writing_hand-)
-  - [Table of Contents](#table-of-contents)
-  - [Requirements](#requirements)
-    - [Install Go](#install-go)
-  - [Start](#start)
-  - [Built with](#built-with)
-  - [Structure](#structure)
-  - [Infrastructure dependencies](#infrastructure-dependencies)
-    - [Docker](#docker)
-    - [Launch services](#launch-services)
-    - [Rebuild app](#rebuild-app)
-  - [Data Model](#data-model)
-  - [Changelog](#changelog)
+    - [Table of Contents](#table-of-contents)
+    - [Requirements](#requirements)
+        - [Install Go](#install-go)
+    - [Start](#start)
+    - [Built with](#built-with)
+    - [Structure](#structure)
+    - [Infrastructure dependencies](#infrastructure-dependencies)
+        - [Docker](#docker)
+        - [Launch services](#launch-services)
+        - [Rebuild app](#rebuild-app)
+    - [Data Model](#data-model)
+    - [Changelog](#changelog)
 
 ## Requirements
 
-| Software      | Version  |
-|:--------------|:---------|
-|Go             | 1.21.X   |
+| Software | Version |
+|:---------|:--------|
+| Go       | 1.21.X  |
 
 ### Install Go
 
@@ -63,6 +63,60 @@ Other installation methods: [Download Golang](https://go.dev/dl/)
     ```
 
 5. Happy hacking :D
+
+## Start with docker
+
+1. Install docker v24.0.2 [how to install?](https://docs.docker.com/engine/install/)
+2. Install docker compose v2.18.1 [how to install?](https://docs.docker.com/compose/install/)
+3. Following the two previous steps from the earlier section
+4. Execute the project with the following command
+
+    ```shell
+    docker-compose up -d
+    ```
+5. Run mongodb migrations
+
+    ```shell
+    make mongodb-seeders
+    ```
+    Note: aditionaly you can run the following command to see the logs
+    ```shell    
+      docker-compose logs -f
+    ```
+
+### Trying the service (only for docker)
+
+with makefile
+
+```shell
+make testing-example-service:
+```
+expected output
+```shell
+============================================================
+Creating new order... 
+
+{"id":"6560ec6df49b452dade3e61e","first_name":"John","last_name":"Doe","sub_example":{"sub_example_id":123,"sub_example_name":"subExampleName"}}
+============================================================
+Searching order from seeder 
+
+{"id":"656045095ff16ef1a00fd4ef","first_name":"John","last_name":"Doe","sub_example":{"sub_example_id":123,"sub_example_name":"subExampleName"}}
+============================================================
+```
+
+Or step by step
+
+Create Example Order
+
+```shell
+curl --location --request POST '127.0.0.1:8080/api/v1/order/create'
+```
+
+Retrieve Example Order
+
+```shell
+curl --location '127.0.0.1:8080/api/v1/order/656045095ff16ef1a00fd4ef'
+```
 
 ## Built with
 
@@ -138,32 +192,10 @@ Other installation methods: [Download Golang](https://go.dev/dl/)
 
 ## Infrastructure dependencies
 
-| Software      | Version  |
-|:--------------|:---------|
-|MongoDB        | >=5.x    |
-|Redis          | >=6.x    |
-
-### Docker
-
-```text
-Docker version 24.0.2
-```
-
-```text
-Docker Compose version v2.18.1
-```
-
-### Launch services
-
-```shell
-docker-compose up -d
-```
-
-### Rebuild app
-
-```shell
-docker-compose up -d app --build
-```
+| Software | Version |
+|:---------|:--------|
+| MongoDB  | >=5.x   |
+| Redis    | >=6.x   |
 
 ## Data Model
 

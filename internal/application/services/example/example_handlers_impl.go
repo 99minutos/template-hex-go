@@ -3,16 +3,14 @@ package example
 import (
 	"context"
 	"example-service/internal/domain"
-	"fmt"
 )
 
 // cada funcion de tu servicio tiene la capacidad de acceder a los repositorios que tenga asociado la estructura
-func (s *ExampleService) CreateExample(ctx context.Context) error {
+func (s *ExampleService) CreateExample(ctx context.Context) (*domain.Example, error) {
 	ctx, span := s.tracer.Start(ctx, "Request/CreateExample")
 	defer span.End()
 
-	s.exRep.CreateExample(ctx) // -- este es un ejemplo de como el repositorio puede ser accedido desde el servicio
-	return fmt.Errorf("not implemented")
+	return s.exRep.CreateExample(ctx) // -- este es un ejemplo de como el repositorio puede ser accedido desde el servicio
 }
 
 // tambien observe como es importante agregar de esta forma el Tracer a cada funcion de tu servicio
@@ -20,7 +18,5 @@ func (s *ExampleService) CreateExample(ctx context.Context) error {
 func (s *ExampleService) GetExample(ctx context.Context, exampleId string) (*domain.Example, error) {
 	ctx, span := s.tracer.Start(ctx, "Request/GetExample")
 	defer span.End()
-
-	s.exRep.GetExample(ctx, exampleId) // -- este es un ejemplo de como el repositorio puede ser accedido desde el servicio
-	return nil, fmt.Errorf("not implemented")
+	return s.exRep.GetExample(ctx, exampleId) // -- este es un ejemplo de como el repositorio puede ser accedido desde el servicio
 }
