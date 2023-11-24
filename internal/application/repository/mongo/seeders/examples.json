@@ -1,0 +1,33 @@
+[{
+  "_id": {
+    "$oid": "656045015ff16ef1a00fd4ee"
+  },
+  "first_name": "John",
+  "last_name": "Doe",
+  "sub_example": {
+    "sub_example_id": 123,
+    "sub_example_name": "subExampleName"
+  }
+},
+{
+  "_id": {
+    "$oid": "656045095ff16ef1a00fd4ef"
+  },
+  "first_name": "John",
+  "last_name": "Doe",
+  "sub_example": {
+    "sub_example_id": 123,
+    "sub_example_name": "subExampleName"
+  }
+},
+{
+  "_id": {
+    "$oid": "6560450a5ff16ef1a00fd4f0"
+  },
+  "first_name": "John",
+  "last_name": "Doe",
+  "sub_example": {
+    "sub_example_id": 123,
+    "sub_example_name": "subExampleName"
+  }
+}]

@@ -6,6 +6,7 @@ import (
 	"example-service/internal/domain"
 	"example-service/internal/infraestructure/adapters/driven/logger"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -49,7 +50,7 @@ func (r *ExampleRepository) CreateExample(ctx context.Context) (*domain.Example,
 		return nil, err
 	}
 
-	example.Id = result.InsertedID.(string)
+	example.Id = result.InsertedID.(primitive.ObjectID).Hex()
 	return example, nil
 }
 
@@ -59,16 +60,17 @@ func (r *ExampleRepository) GetExample(ctx context.Context, exampleId string) (*
 	defer span.End()
 
 	collection := r.database.Collection(r.tableName)
+	objectId, err := primitive.ObjectIDFromHex(exampleId)
+	if err != nil {
+		logger.Logger.Error("error parsing objectId", zap.Error(err))
+	}
 	query := bson.M{
-		"_id": exampleId,
+		"_id": objectId,
 	}
 	var example *domain.Example
-
-	err := collection.FindOne(ctx, query).Decode(example)
+	err = collection.FindOne(ctx, query).Decode(&example)
 	if err != nil {
 		logger.Logger.Error("error getting example", zap.Error(err))
-		return nil, err
 	}
-
-	return example, nil
+	return example, err
 }
