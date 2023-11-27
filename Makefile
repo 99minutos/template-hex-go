@@ -25,6 +25,7 @@ mongodb-seeders:
 		--collection "examples" \
 		--file "examples.json" \
 		--jsonArray
+	@rm -rf examples.json
 	@echo "Seeders implemented successfully.!"
 	@echo "============================================================"
 
