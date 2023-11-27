@@ -1,4 +1,7 @@
+#defaul variables
 COMPOSE_PROJECT_NAME := $(shell basename "$$(pwd)")
+MONGO_DATABASE ?= app
+
 .PHONY: shipments-snapshots-service
 ss:
 	@echo "Compiling shipments-snapshots-service... \c"
@@ -13,19 +16,23 @@ ss:
 	@echo "Done."
 
 .PHONY: setting-up-mongodb
+
 mongodb-seeders:
 	@echo "============================================================"
-	@echo "Setting up mongodb seeders... \n"
+	@echo "Setting up mongodb seeders on database \"${MONGO_DATABASE}\"... \n"
 	@docker cp ${COMPOSE_PROJECT_NAME}-app:/src/internal/application/repository/mongo/seeders/examples.json examples.json > /dev/null 2>&1
 	@docker cp examples.json ${COMPOSE_PROJECT_NAME}-mongodb:/examples.json > /dev/null 2>&1
-	@docker exec -d ${COMPOSE_PROJECT_NAME}-mongodb mongosh --eval "use admin && db.auth('root', 'secret') && use app && db.examples.deleteMany({})"
+	@echo "Cleaning previous seeds... \n"
+	@docker exec -d ${COMPOSE_PROJECT_NAME}-mongodb mongosh --eval "use admin && db.auth('root', 'secret') && use ${MONGO_DATABASE} && db.examples.deleteMany({})"
+	@echo "Seeding database... \n"
 	@docker exec -d ${COMPOSE_PROJECT_NAME}-mongodb mongoimport \
-		--uri "mongodb://root:secret@${COMPOSE_PROJECT_NAME}-mongodb:27017/app" \
+		--uri "mongodb://root:secret@${COMPOSE_PROJECT_NAME}-mongodb:27017/${MONGO_DATABASE}" \
 		--authenticationDatabase=admin \
 		--collection "examples" \
 		--file "examples.json" \
 		--jsonArray
-	@echo "Seeders implemented successfully.!"
+	@rm -rf examples.json
+	@echo "Seeders done successfully.!"
 	@echo "============================================================"
 
 testing-example-service:

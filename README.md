@@ -68,31 +68,36 @@ Other installation methods: [Download Golang](https://go.dev/dl/)
 
 1. Install docker v24.0.2 [how to install?](https://docs.docker.com/engine/install/)
 2. Install docker compose v2.18.1 [how to install?](https://docs.docker.com/compose/install/)
-3. Following the two previous steps from the earlier section
-4. Execute the project with the following command
+3. Clone this project
+4. Copy environment configuration 
+    ```shell
+    cp .env.example .env
+    ```
+5. Execute the project with the following command
 
     ```shell
     docker-compose up -d
     ```
-5. Run mongodb migrations
-
+6. Run mongodb seeders. Note: this command will execute the seeders in a default mongo db called `app`
     ```shell
     make mongodb-seeders
     ```
-    Note: aditionaly you can run the following command to see the logs
-    ```shell    
-      docker-compose logs -f
+   if you want to customize the mongo db name (if you change MONGO_DATABASE in .env file), you can use the following command
+    ```shell
+    make mongodb-seeders MONGO_DATABASE=<your-db-name>
     ```
+7. For next steps see [Trying the service (only for docker)](#trying-the-service-only-for-docker)
+ 
 
 ### Trying the service (only for docker)
 
 with makefile
 
 ```shell
-make testing-example-service:
+make testing-example-service
 ```
 expected output
-```shell
+```bash
 ============================================================
 Creating new order... 
 
