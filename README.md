@@ -78,10 +78,13 @@ Other installation methods: [Download Golang](https://go.dev/dl/)
     ```shell
     docker-compose up -d
     ```
-6. Run mongodb migrations
-
+6. Run mongodb seeders. Note: this command will execute the seeders in a default mongo db called `app`
     ```shell
     make mongodb-seeders
+    ```
+   if you want to customize the mongo db name (if you change MONGO_DATABASE in .env file), you can use the following command
+    ```shell
+    make mongodb-seeders MONGO_DATABASE=<your-db-name>
     ```
 7. For next steps see [Trying the service (only for docker)](#trying-the-service-only-for-docker)
  
