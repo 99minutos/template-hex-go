@@ -1,4 +1,4 @@
-package domain
+package entities
 
 type SubExample struct {
 	SubExampleId   int    `json:"sub_example_id" bson:"sub_example_id"`

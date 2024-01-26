@@ -1,10 +1,9 @@
 package rest
 
 import (
-	"example-service/internal/application/ports"
-	"example-service/internal/config"
+	"example-service/internal/domain/core"
+	"example-service/internal/domain/ports"
 	driven_fiber "example-service/internal/infraestructure/adapters/driven/fiber"
-	"example-service/internal/infraestructure/adapters/driven/logger"
 	"github.com/gofiber/fiber/v2"
 	"net"
 )
@@ -13,19 +12,21 @@ type RestError struct {
 	Cause string `json:"Cause"`
 }
 type RestHandler struct {
+	acx       *core.AppContext
 	Fiber     *driven_fiber.FiberServer
 	exService ports.IExampleService
 }
 
-func NewRestHandler(exService ports.IExampleService) *RestHandler {
+func NewRestHandler(acx *core.AppContext, exService ports.IExampleService) *RestHandler {
 	Fiber := driven_fiber.NewFiberServer()
 	return &RestHandler{
+		acx:       acx,
 		Fiber:     Fiber,
 		exService: exService,
 	}
 }
 
-func (r *RestHandler) InitializeRoutes(config config.AppConfig) {
+func (r *RestHandler) InitializeRoutes(config *core.AppConfig) {
 	v1 := r.Fiber.Server.Group("/api/v1")
 	v1.Get("/order/:trackingId", r.GetExample)
 	v1.Post("/order/create", r.CreateExample)
@@ -35,7 +36,7 @@ func (r *RestHandler) Start(is net.Listener) {
 	err := r.Fiber.Server.Listener(is)
 
 	if err != nil {
-		logger.Logger.Fatal(err)
+		r.acx.Fatalw("unable to listen", "error", err)
 	}
 }
 

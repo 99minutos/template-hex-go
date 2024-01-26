@@ -1,7 +1,7 @@
 package cmux
 
 import (
-	"example-service/internal/infraestructure/adapters/driven/logger"
+	"example-service/internal/domain/core"
 	"github.com/soheilhy/cmux"
 	"net"
 )
@@ -13,10 +13,10 @@ type CmuxContainer struct {
 	cmux     cmux.CMux
 }
 
-func NewCmux(port string) *CmuxContainer {
-	l, err := net.Listen("tcp", ":"+port)
+func NewCmux(acx *core.AppContext) *CmuxContainer {
+	l, err := net.Listen("tcp", ":"+acx.Envs.Port)
 	if err != nil {
-		logger.Logger.Fatal(err)
+		acx.Fatalw("unable to listen", "error", err)
 	}
 	m := cmux.New(l)
 	grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))

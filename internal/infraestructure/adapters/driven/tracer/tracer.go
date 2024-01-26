@@ -2,8 +2,7 @@ package tracer
 
 import (
 	"context"
-	"example-service/internal/config"
-	"example-service/internal/infraestructure/adapters/driven/logger"
+	"example-service/internal/domain/core"
 	"fmt"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
@@ -25,19 +24,18 @@ func GetTracerInstance() trace.Tracer {
 	return Tracer
 }
 
-func Setup(ctx context.Context, cfg *config.AppConfig) (trace.Tracer, error) {
-	logger := logger.Logger
-	logger.Info("Tracer is starting...")
+func Setup(ctx context.Context, acx *core.AppContext) (trace.Tracer, error) {
+	acx.Infow("Tracer is starting...")
 
-	exporter, err := getExporter(ctx, cfg)
+	exporter, err := getExporter(ctx, acx)
 	if err != nil {
-		logger.Warnf("failed creating tracer exporter: %v", err.Error())
-		exporter = &CustomExporter{}
+		acx.Warnw("failed creating tracer exporter", "error", err)
+		exporter = &TracerWithoutExport{}
 	}
 
-	res, err := newResource(ctx, cfg)
+	res, err := newResource(ctx, acx)
 	if err != nil {
-		logger.Warnf("failed creating tracer resource: %v", err.Error())
+		acx.Warnw("failed creating tracer resource", "error", err)
 	}
 
 	provider := sdktrace.NewTracerProvider(
@@ -47,12 +45,12 @@ func Setup(ctx context.Context, cfg *config.AppConfig) (trace.Tracer, error) {
 
 	TelemetryProvider = provider
 	TelemetryShutdown = provider.Shutdown
-	Tracer = otel.Tracer("github.com/99minutos/inbound-service")
-	logger.Info("Tracer has started.")
+	Tracer = otel.Tracer(acx.Envs.AppName)
+	acx.Infow("Tracer has started.")
 	defer func(provider *sdktrace.TracerProvider, ctx context.Context) {
 		err := provider.ForceFlush(ctx)
 		if err != nil {
-			logger.Warnf("provider.ForceFlush: %v", err)
+			acx.Warnw("provider.ForceFlush: %v", err)
 		}
 	}(provider, ctx)
 	otel.SetTextMapPropagator(
@@ -66,27 +64,17 @@ func Setup(ctx context.Context, cfg *config.AppConfig) (trace.Tracer, error) {
 	return Tracer, nil
 }
 
-type CustomExporter struct{}
-
-func (ce *CustomExporter) ExportSpans(ctx context.Context, spans []sdktrace.ReadOnlySpan) error {
-	return nil
-}
-
-func (ce *CustomExporter) Shutdown(ctx context.Context) error {
-	return nil
-}
-
-func getExporter(ctx context.Context, cfg *config.AppConfig) (sdktrace.SpanExporter, error) {
-	logger := logger.Logger
-	exporter, err := texporter.New(texporter.WithProjectID(cfg.ProjectId))
+func getExporter(ctx context.Context, acx *core.AppContext) (sdktrace.SpanExporter, error) {
+	exporter, err := texporter.New(texporter.WithProjectID(acx.Envs.ProjectId))
 	if err != nil {
-		logger.Warnf("texporter.New: %v", err)
+		acx.Warnw("failed creating tracer exporter", "error", err)
+		return nil, err
 	}
 
-	return exporter, err
+	return exporter, nil
 }
 
-func newResource(ctx context.Context, cfg *config.AppConfig) (*resource.Resource, error) {
+func newResource(ctx context.Context, acx *core.AppContext) (*resource.Resource, error) {
 	r, err := resource.New(ctx,
 		// Use the GCP resource detector!
 		resource.WithDetectors(gcp.NewDetector()),
@@ -94,7 +82,7 @@ func newResource(ctx context.Context, cfg *config.AppConfig) (*resource.Resource
 		resource.WithTelemetrySDK(),
 		// Add your own custom attributes to identify your application
 		resource.WithAttributes(
-			semconv.ServiceNameKey.String(cfg.AppName),
+			semconv.ServiceNameKey.String(acx.Envs.AppName),
 		),
 	)
 

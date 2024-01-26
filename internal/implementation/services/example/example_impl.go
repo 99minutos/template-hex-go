@@ -2,14 +2,16 @@ package example
 
 import (
 	"context"
-	ports2 "example-service/internal/application/ports"
+	"example-service/internal/domain/core"
+	"example-service/internal/domain/ports"
 	"go.opentelemetry.io/otel/trace"
 )
 
 type ExampleService struct {
+	acx       *core.AppContext
 	tracer    trace.Tracer
 	globalCtx context.Context
-	exRep     ports2.IExampleRepository
+	exRep     ports.IExampleRepository
 }
 
 // implementacion del servicio, notese como el puerto es devuelto en NewExampleService
@@ -22,10 +24,12 @@ type ExampleService struct {
 // que este servicio funcione.
 func NewExampleService(
 	ctx context.Context,
-	exRep ports2.IExampleRepository,
+	acx *core.AppContext,
+	exRep ports.IExampleRepository,
 	tracer trace.Tracer,
-) ports2.IExampleService {
+) ports.IExampleService {
 	return &ExampleService{
+		acx:       acx,
 		globalCtx: ctx,
 		exRep:     exRep,
 		tracer:    tracer,
