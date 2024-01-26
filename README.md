@@ -69,7 +69,7 @@ Other installation methods: [Download Golang](https://go.dev/dl/)
 1. Install docker v24.0.2 [how to install?](https://docs.docker.com/engine/install/)
 2. Install docker compose v2.18.1 [how to install?](https://docs.docker.com/compose/install/)
 3. Clone this project
-4. Copy environment configuration 
+4. Copy environment configuration
     ```shell
     cp .env.example .env
     ```
@@ -82,12 +82,12 @@ Other installation methods: [Download Golang](https://go.dev/dl/)
     ```shell
     make mongodb-seeders
     ```
-   if you want to customize the mongo db name (if you change MONGO_DATABASE in .env file), you can use the following command
+   if you want to customize the mongo db name (if you change MONGO_DATABASE in .env file), you can use the following
+   command
     ```shell
     make mongodb-seeders MONGO_DATABASE=<your-db-name>
     ```
 7. For next steps see [Trying the service (only for docker)](#trying-the-service-only-for-docker)
- 
 
 ### Trying the service (only for docker)
 
@@ -96,7 +96,9 @@ with makefile
 ```shell
 make testing-example-service
 ```
+
 expected output
+
 ```bash
 ============================================================
 Creating new order... 
@@ -135,65 +137,92 @@ curl --location '127.0.0.1:8080/api/v1/order/656045095ff16ef1a00fd4ef'
 <service-name>
 .
 ├── build
-│   ├── cloudbuild.yaml
-│   └── Dockerfile
+│   ├── cloudbuild.yaml
+│   └── Dockerfile
+├── cmd
+│   └── service
+│       └── main.go
+├── docs
+│   ├── MODEL.md
+│   ├── STATE-MACHINE.md
+│   └── TRANSITIONS.md
+├── internal
+│   ├── domain
+│   │   ├── core
+│   │   │   ├── context.go
+│   │   │   └── envs.go
+│   │   ├── entities
+│   │   │   └── example.go
+│   │   └── ports
+│   │       ├── core
+│   │       │   └── logger.go
+│   │       ├── example_repo_iface.go
+│   │       └── example_service_iface.go
+│   ├── implementation
+│   │   ├── repository
+│   │   │   └── mongo
+│   │   │       ├── seeders
+│   │   │       │   └── examples.json
+│   │   │       └── order_impl.go
+│   │   └── services
+│   │       └── example
+│   │           ├── example_handlers_impl.go
+│   │           └── example_impl.go
+│   └── infraestructure
+│       ├── driven
+│       │   ├── cmux
+│       │   │   └── cmux.go
+│       │   ├── core
+│       │   │   ├── envs
+│       │   │   │   └── config.go
+│       │   │   └── logger
+│       │   │       └── logger.go
+│       │   ├── fiber
+│       │   │   └── fiber.go
+│       │   ├── mongodb
+│       │   │   └── mongodb.go
+│       │   ├── redis
+│       │   │   └── cache.go
+│       │   └── tracer
+│       │       ├── tracer.go
+│       │       └── without_exporter.go
+│       └── driver
+│           ├── grpc
+│           │   ├── domain_to_grpc.go
+│           │   ├── handlers.go
+│           │   └── server.go
+│           └── rest
+│               └── handlers.go
 ├── CHANGELOG.md
 ├── CHANGELOG.template.md
-├── cmd
-│   └── example
-│       └── main.go
 ├── docker-compose.yml
 ├── Dockerfile.dev
-├── docs
-│   ├── MODEL.md
-│   ├── STATE-MACHINE.md
-│   └── TRANSITIONS.md
 ├── go.mod
 ├── go.sum
-├── internal
-│   ├── application
-│   │   ├── ports
-│   │   │   ├── example_repo_iface.go
-│   │   │   └── example_service_iface.go
-│   │   ├── repository
-│   │   │   └── mongo
-│   │   │       └── order_impl.go
-│   │   └── services
-│   │       └── example
-│   │           ├── example_handlers_impl.go
-│   │           └── example_impl.go
-│   ├── config
-│   │   ├── config.go
-│   │   └── helpers.go
-│   ├── domain
-│   │   └── example.go
-│   └── infraestructure
-│       └── adapters
-│           ├── driven
-│           │   ├── cmux
-│           │   │   └── cmux.go
-│           │   ├── envs
-│           │   │   └── config.go
-│           │   ├── fiber
-│           │   │   └── fiber.go
-│           │   ├── logger
-│           │   │   └── logger.go
-│           │   ├── mongodb
-│           │   │   └── mongodb.go
-│           │   ├── redis
-│           │   │   └── cache.go
-│           │   └── tracer
-│           │       └── tracer.go
-│           └── driver
-│               ├── grpc
-│               │   ├── domain_to_grpc.go
-│               │   ├── handlers.go
-│               │   └── server.go
-│               └── rest
-│                   └── handlers.go
 ├── Makefile
 └── README.md
+
+
 ```
+
+### Domain
+
+The domain layer encapsulates the application's business logic, integrating data entities and ports that abstract this
+logic.
+
+### Implementation
+
+The implementation layer is responsible for executing the specific technical details and interactions of an application.
+It implements everything defined in the ports and utilizes the entities. Dependency injection is used in this layer to
+facilitate the use of other services and repositories, thereby realizing the concepts defined in the domain layer
+through concrete implementations and interfacing with external systems and managing data flow.
+
+### Infrastructure
+
+The architecture layer in software design provides the structural blueprint for the application. It outlines how various
+components such as the domain, implementation, and presentation layers interact and are organized. This layer focuses on
+aspects like scalability, maintainability, and technology stack, ensuring that the application's overall structure
+supports its requirements and goals.
 
 ## Infrastructure dependencies
 

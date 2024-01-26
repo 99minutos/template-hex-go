@@ -5,13 +5,13 @@ import (
 	"example-service/internal/domain/core"
 	"example-service/internal/implementation/repository/mongo"
 	services "example-service/internal/implementation/services/example"
-	"example-service/internal/infraestructure/adapters/driven/cmux"
-	"example-service/internal/infraestructure/adapters/driven/core/envs"
-	"example-service/internal/infraestructure/adapters/driven/core/logger"
-	mongodriven "example-service/internal/infraestructure/adapters/driven/mongodb"
-	redisdriven "example-service/internal/infraestructure/adapters/driven/redis"
-	"example-service/internal/infraestructure/adapters/driven/tracer"
-	"example-service/internal/infraestructure/adapters/driver/rest"
+	"example-service/internal/infraestructure/driven/cmux"
+	"example-service/internal/infraestructure/driven/core/envs"
+	"example-service/internal/infraestructure/driven/core/logger"
+	mongodriven "example-service/internal/infraestructure/driven/mongodb"
+	redisdriven "example-service/internal/infraestructure/driven/redis"
+	"example-service/internal/infraestructure/driven/tracer"
+	"example-service/internal/infraestructure/driver/rest"
 )
 
 func main() {

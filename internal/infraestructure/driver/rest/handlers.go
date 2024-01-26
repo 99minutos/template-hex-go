@@ -3,7 +3,7 @@ package rest
 import (
 	"example-service/internal/domain/core"
 	"example-service/internal/domain/ports"
-	driven_fiber "example-service/internal/infraestructure/adapters/driven/fiber"
+	driven_fiber "example-service/internal/infraestructure/driven/fiber"
 	"github.com/gofiber/fiber/v2"
 	"net"
 )
