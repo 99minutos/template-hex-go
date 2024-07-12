@@ -2,35 +2,36 @@ package mongo
 
 import (
 	"context"
-	"example-service/internal/domain/core"
 	"example-service/internal/domain/entities"
 	"example-service/internal/domain/ports"
+	"example-service/internal/infraestructure/driven/core"
+	"example-service/internal/infraestructure/driven/tracer"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type ExampleRepository struct {
-	acx       *core.AppContext
-	tracer    trace.Tracer
-	tableName string
-	database  *mongo.Database
+	tableName         string
+	database          *mongo.Database
+	exampleCollection *mongo.Collection
 }
 
-func NewExampleRepository(acx *core.AppContext, tableName string, database *mongo.Database, tracer trace.Tracer) ports.IExampleRepository {
+func NewExampleRepository(database *mongo.Database) ports.IExampleRepository {
+	tableName := "example"
+	collection := database.Collection(tableName)
 	return &ExampleRepository{
-		acx:       acx,
-		database:  database,
-		tracer:    tracer,
-		tableName: tableName,
+		database:          database,
+		tableName:         tableName,
+		exampleCollection: collection,
 	}
 }
 
 // CreateExample
 func (r *ExampleRepository) CreateExample(ctx context.Context) (*entities.Example, error) {
-	ctx, span := r.tracer.Start(ctx, "Repository/Example/CreateExample")
+	ctx, span := tracer.GetTracer().Start(ctx, "Repository/Example/CreateExample")
 	defer span.End()
 
 	span.SetAttributes(
@@ -57,13 +58,15 @@ func (r *ExampleRepository) CreateExample(ctx context.Context) (*entities.Exampl
 
 // GetExample
 func (r *ExampleRepository) GetExample(ctx context.Context, exampleId string) (*entities.Example, error) {
-	ctx, span := r.tracer.Start(ctx, "Repository/Example/GetExample")
+	ctx, span := tracer.GetTracer().Start(ctx, "Repository/Example/GetExample")
 	defer span.End()
+
+	log := core.GetDefaultLogger()
 
 	collection := r.database.Collection(r.tableName)
 	objectId, err := primitive.ObjectIDFromHex(exampleId)
 	if err != nil {
-		r.acx.Errorw("error parsing objectId", "error", err)
+		log.Errorw("error parsing objectId", "error", err)
 
 	}
 	query := bson.M{
@@ -72,7 +75,7 @@ func (r *ExampleRepository) GetExample(ctx context.Context, exampleId string) (*
 	var example *entities.Example
 	err = collection.FindOne(ctx, query).Decode(&example)
 	if err != nil {
-		r.acx.Errorw("error getting example", "error", err)
+		log.Errorw("error getting example", "error", err)
 
 	}
 	return example, err

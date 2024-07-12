@@ -1,43 +1,49 @@
 package rest
 
 import (
-	"example-service/internal/domain/core"
 	"example-service/internal/domain/ports"
-	driven_fiber "example-service/internal/infraestructure/driven/fiber"
-	"github.com/gofiber/fiber/v2"
+	"example-service/internal/infraestructure/driven/core"
+	driven_fiber "example-service/internal/infraestructure/driven/fiber_server"
 	"net"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type RestError struct {
 	Cause string `json:"Cause"`
 }
 type RestHandler struct {
-	acx       *core.AppContext
 	Fiber     *driven_fiber.FiberServer
 	exService ports.IExampleService
 }
 
-func NewRestHandler(acx *core.AppContext, exService ports.IExampleService) *RestHandler {
+func NewRestHandler(exService ports.IExampleService) *RestHandler {
 	Fiber := driven_fiber.NewFiberServer()
 	return &RestHandler{
-		acx:       acx,
 		Fiber:     Fiber,
 		exService: exService,
 	}
 }
 
-func (r *RestHandler) InitializeRoutes(config *core.AppConfig) {
+func (r *RestHandler) InitializeRoutes() {
 	v1 := r.Fiber.Server.Group("/api/v1")
+	v1.Get("/health", r.HealthCheck)
 	v1.Get("/order/:trackingId", r.GetExample)
 	v1.Post("/order/create", r.CreateExample)
 }
 
 func (r *RestHandler) Start(is net.Listener) {
 	err := r.Fiber.Server.Listener(is)
+	log := core.GetDefaultLogger()
 
 	if err != nil {
-		r.acx.Fatalw("unable to listen", "error", err)
+		log.Fatalw("unable to listen", "error", err)
 	}
+}
+
+func (r *RestHandler) HealthCheck(fctx *fiber.Ctx) error {
+	fctx.Status(fiber.StatusOK).JSON(fiber.Map{"status": "ok"})
+	return nil
 }
 
 func (r *RestHandler) GetExample(fctx *fiber.Ctx) error {

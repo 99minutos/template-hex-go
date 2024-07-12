@@ -2,10 +2,10 @@ package mongodbrepo
 
 import (
 	"context"
-	"example-service/internal/domain/core"
+	"example-service/internal/infraestructure/driven/core"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 
 	"go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo"
 )
@@ -13,13 +13,13 @@ import (
 var mongoClient *mongo.Client
 var mongoDatabase *mongo.Database
 
-func ConnectMongoDB(ctx context.Context, acx *core.AppContext) {
-	acx.Infow("MongoDB is starting...")
+func ConnectMongoDB(ctx context.Context, mongoUrl string, database string, appName string) {
+	log := core.GetDefaultLogger()
 
 	clientOptions := options.Client()
 	clientOptions.SetMonitor(otelmongo.NewMonitor())
-	clientOptions.ApplyURI(acx.Envs.MongoUrl)
-	clientOptions.SetAppName(acx.Envs.AppName)
+	clientOptions.ApplyURI(mongoUrl)
+	clientOptions.SetAppName(appName)
 	client, err := mongo.NewClient(clientOptions)
 	if err != nil {
 		log.Fatal(err)
@@ -33,24 +33,25 @@ func ConnectMongoDB(ctx context.Context, acx *core.AppContext) {
 	databaseOptions := options.Database()
 
 	mongoClient = client
-	mongoDatabase = mongoClient.Database(acx.Envs.MongoDatabase, databaseOptions)
-	acx.Infow("MongoDB is connected")
+	mongoDatabase = mongoClient.Database(database, databaseOptions)
+	log.Infow("MongoDB is connected")
 }
 
 func GetDatabase() *mongo.Database {
 	return mongoDatabase
 }
 
-func DisconnectMongoDB(ctx context.Context, acx *core.AppContext) {
+func DisconnectMongoDB(ctx context.Context) {
+	log := core.GetDefaultLogger()
 	if mongoClient == nil {
-		acx.Fatalw("mongodb client is nil")
+		log.Fatalw("mongodb client is nil")
 		return
 	}
 
 	err := mongoClient.Disconnect(ctx)
 	if err != nil {
-		acx.Fatalw("mongodb disconnect error", "error", err)
+		log.Fatalw("mongodb disconnect error", "error", err)
 	}
 
-	acx.Infow("mongodb is disconnected")
+	log.Infow("mongodb is disconnected")
 }

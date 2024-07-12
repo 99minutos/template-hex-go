@@ -2,55 +2,62 @@ package tracer
 
 import (
 	"context"
-	"example-service/internal/domain/core"
+	"example-service/internal/infraestructure/driven/core"
 	"fmt"
+	"sync"
+
+	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
+	gcppropagator "github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"go.opentelemetry.io/otel/trace"
-
-	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
-	gcppropagator "github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator"
+	"go.uber.org/zap"
 )
 
-var TelemetryProvider *sdktrace.TracerProvider
-var Tracer trace.Tracer
-var TelemetryShutdown func(ctx context.Context) error
+var (
+	tracerInstance trace.Tracer
+	once           sync.Once
+)
 
-func GetTracerInstance() trace.Tracer {
-	return Tracer
+func GetTracer() trace.Tracer {
+	once.Do(func() {
+		tracerInstance = NewTracer()
+	})
+
+	return tracerInstance
 }
 
-func Setup(ctx context.Context, acx *core.AppContext) (trace.Tracer, error) {
-	acx.Infow("Tracer is starting...")
+func NewTracer() trace.Tracer {
+	ctx := context.Background()
+	defaultLog := core.GetDefaultLogger()
+	defaultLog.Infow("Tracer is starting...")
+	config := core.GetEnviroments()
 
-	exporter, err := getExporter(ctx, acx)
+	exporter, err := getExporter(config.ProjectId, defaultLog)
 	if err != nil {
-		acx.Warnw("failed creating tracer exporter", "error", err)
-		exporter = &TracerWithoutExport{}
+		defaultLog.Errorw("failed creating tracer", "error", err)
 	}
 
-	res, err := newResource(ctx, acx)
+	res, err := newResource(ctx, config.AppName)
 	if err != nil {
-		acx.Warnw("failed creating tracer resource", "error", err)
+		defaultLog.Errorw("failed creating tracer", "error", err)
 	}
 
 	provider := sdktrace.NewTracerProvider(
 		sdktrace.WithResource(res),
 		sdktrace.WithBatcher(exporter),
 	)
-
-	TelemetryProvider = provider
-	TelemetryShutdown = provider.Shutdown
-	Tracer = otel.Tracer(acx.Envs.AppName)
-	acx.Infow("Tracer has started.")
+	tracer := otel.Tracer(config.AppName)
+	defaultLog.Infow("Tracer has started.")
 	defer func(provider *sdktrace.TracerProvider, ctx context.Context) {
 		err := provider.ForceFlush(ctx)
 		if err != nil {
-			acx.Warnw("provider.ForceFlush: %v", err)
+			defaultLog.Warnw("provider.ForceFlush: %v", err)
 		}
 	}(provider, ctx)
 	otel.SetTextMapPropagator(
@@ -60,21 +67,26 @@ func Setup(ctx context.Context, acx *core.AppContext) (trace.Tracer, error) {
 			propagation.Baggage{},
 		),
 	)
-	otel.SetTracerProvider(TelemetryProvider)
-	return Tracer, nil
+	otel.SetTracerProvider(provider)
+	return tracer
 }
 
-func getExporter(ctx context.Context, acx *core.AppContext) (sdktrace.SpanExporter, error) {
-	exporter, err := texporter.New(texporter.WithProjectID(acx.Envs.ProjectId))
+func getExporter(projectId string, log zap.SugaredLogger) (sdktrace.SpanExporter, error) {
+	gcpExporter, err := texporter.New(texporter.WithProjectID(projectId))
 	if err != nil {
-		acx.Warnw("failed creating tracer exporter", "error", err)
-		return nil, err
+		log.Warnw("Failed to create the Google Cloud Trace exporter, using console exporter instead", "err", err)
+		stdoutExporter, err := stdouttrace.New()
+		if err != nil {
+			log.Errorw("Failed to create the console exporter", "err", err)
+			return nil, err
+		}
+		return stdoutExporter, nil
 	}
 
-	return exporter, nil
+	return gcpExporter, nil
 }
 
-func newResource(ctx context.Context, acx *core.AppContext) (*resource.Resource, error) {
+func newResource(ctx context.Context, appName string) (*resource.Resource, error) {
 	r, err := resource.New(ctx,
 		// Use the GCP resource detector!
 		resource.WithDetectors(gcp.NewDetector()),
@@ -82,7 +94,7 @@ func newResource(ctx context.Context, acx *core.AppContext) (*resource.Resource,
 		resource.WithTelemetrySDK(),
 		// Add your own custom attributes to identify your application
 		resource.WithAttributes(
-			semconv.ServiceNameKey.String(acx.Envs.AppName),
+			semconv.ServiceNameKey.String(appName),
 		),
 	)
 
