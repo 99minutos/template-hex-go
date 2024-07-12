@@ -1,4 +1,4 @@
-package fiber
+package fiber_server
 
 import (
 	"errors"
