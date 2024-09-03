@@ -1,6 +1,6 @@
 module example-service
 
-go 1.22
+go 1.22.6
 
 require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.21.0
