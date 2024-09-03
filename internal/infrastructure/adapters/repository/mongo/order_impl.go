@@ -4,8 +4,8 @@ import (
 	"context"
 	"example-service/internal/domain/entities"
 	"example-service/internal/domain/ports"
-	"example-service/internal/infraestructure/driven/core"
-	"example-service/internal/infraestructure/driven/tracer"
+	"example-service/internal/infrastructure/driven/core"
+	"example-service/internal/infrastructure/driven/tracer"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

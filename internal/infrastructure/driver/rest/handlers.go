@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"example-service/internal/domain/ports"
-	"example-service/internal/infraestructure/driven/core"
-	driven_fiber "example-service/internal/infraestructure/driven/fiber_server"
+	"example-service/internal/implementation/example"
+	"example-service/internal/infrastructure/driven/core"
+	driven_fiber "example-service/internal/infrastructure/driven/fiber_server"
 	"net"
 
 	"github.com/gofiber/fiber/v2"
@@ -14,10 +14,10 @@ type RestError struct {
 }
 type RestHandler struct {
 	Fiber     *driven_fiber.FiberServer
-	exService ports.IExampleService
+	exService *example.ExampleService
 }
 
-func NewRestHandler(exService ports.IExampleService) *RestHandler {
+func NewRestHandler(exService *example.ExampleService) *RestHandler {
 	Fiber := driven_fiber.NewFiberServer()
 	return &RestHandler{
 		Fiber:     Fiber,

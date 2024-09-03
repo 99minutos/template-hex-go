@@ -2,7 +2,7 @@ package mongodbrepo
 
 import (
 	"context"
-	"example-service/internal/infraestructure/driven/core"
+	"example-service/internal/infrastructure/driven/core"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

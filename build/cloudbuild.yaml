@@ -9,7 +9,7 @@ steps:
         docker build -t gcr.io/$PROJECT_ID/$_SERVICE_NAME:$COMMIT_SHA \
           --build-arg ARG_GITHUB_TOKEN=$$SECRET_GITHUB_PWD \
           --build-arg ARG_GITHUB_USER=$$SECRET_GITHUB_USER \
-          -f build/Dockerfile .
+          -f docker/Dockerfile.prod .
 
   - id: "Registering container..."
     name: "gcr.io/cloud-builders/docker"

@@ -2,7 +2,7 @@ package redis
 
 import (
 	"context"
-	"example-service/internal/infraestructure/driven/core"
+	"example-service/internal/infrastructure/driven/core"
 	"net/url"
 	"strings"
 

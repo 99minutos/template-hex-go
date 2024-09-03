@@ -2,7 +2,7 @@ package tracer
 
 import (
 	"context"
-	"example-service/internal/infraestructure/driven/core"
+	"example-service/internal/infrastructure/driven/core"
 	"fmt"
 	"sync"
 
