@@ -1,7 +1,7 @@
 package cmux
 
 import (
-	"example-service/internal/infraestructure/driven/core"
+	"example-service/internal/infrastructure/driven/core"
 	"net"
 
 	"github.com/soheilhy/cmux"

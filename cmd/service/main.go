@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	"example-service/internal/implementation/repository/mongo"
-	services "example-service/internal/implementation/services/example"
-	"example-service/internal/infraestructure/driven/cmux"
-	"example-service/internal/infraestructure/driven/core"
-	mongodriven "example-service/internal/infraestructure/driven/mongodb"
-	redisdriven "example-service/internal/infraestructure/driven/redis"
-	"example-service/internal/infraestructure/driver/rest"
+	services "example-service/internal/implementation/example"
+	"example-service/internal/infrastructure/adapters/repository/mongo"
+	"example-service/internal/infrastructure/driven/cmux"
+	"example-service/internal/infrastructure/driven/core"
+	mongodriven "example-service/internal/infrastructure/driven/mongodb"
+	redisdriven "example-service/internal/infrastructure/driven/redis"
+	"example-service/internal/infrastructure/driver/rest"
+	"sync"
 )
 
 func main() {
@@ -16,10 +17,26 @@ func main() {
 	cfg := core.GetEnviroments()
 
 	// Initialize database
-	mongodriven.ConnectMongoDB(ctx, cfg.MongoUrl, cfg.MongoDatabase, cfg.AppName)
-	defer mongodriven.DisconnectMongoDB(ctx)
+	wg := &sync.WaitGroup{}
+	callbacks := []func(wait *sync.WaitGroup){
+		func(wait *sync.WaitGroup) {
+			defer wg.Done()
+			mongodriven.ConnectMongoDB(ctx, cfg.MongoUrl, cfg.MongoDatabase, cfg.AppName)
+		},
+		func(wait *sync.WaitGroup) {
+			defer wg.Done()
+			redisdriven.ConnectRedisDB(ctx, cfg.RedisUrl)
+		},
+		// Add more connections here
+	}
 
-	redisdriven.ConnectRedisDB(ctx, cfg.RedisUrl)
+	wg.Add(len(callbacks))
+	for _, cb := range callbacks {
+		go cb(wg)
+	}
+	wg.Wait()
+
+	defer mongodriven.DisconnectMongoDB(ctx)
 	defer redisdriven.DisconnectRedisDB(ctx)
 
 	// Initialize repositories

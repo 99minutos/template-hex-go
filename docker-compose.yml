@@ -5,7 +5,7 @@ services:
     container_name: ${COMPOSE_PROJECT_NAME}-app
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: docker/Dockerfile.dev
     ports:
       - ${PORT}:${PORT}
     volumes:
@@ -14,18 +14,15 @@ services:
       - .env
     depends_on:
       - mongodb
+      - redis
 
   mongodb:
     container_name: ${COMPOSE_PROJECT_NAME}-mongodb
-    image: mongo:5.0
-    environment:
-      - MONGO_INITDB_DATABASE=app
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=secret
+    image: mongo:7.0
     ports:
       - 27017:27017
     volumes:
-      - .mongodb:/data/db
+      - db-data:/data/db
 
   redis:
     container_name: ${COMPOSE_PROJECT_NAME}-redis
@@ -34,5 +31,6 @@ services:
     ports:
       - "6379:6379"
     command: redis-server --save 20 1 --loglevel warning
-    volumes:
-      - .redis:/data
+
+volumes:
+  db-data: {}

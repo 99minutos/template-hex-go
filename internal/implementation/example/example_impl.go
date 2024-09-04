@@ -4,7 +4,7 @@ import (
 	"context"
 	"example-service/internal/domain/entities"
 	"example-service/internal/domain/ports"
-	"example-service/internal/infraestructure/driven/tracer"
+	"example-service/internal/infrastructure/driven/tracer"
 )
 
 type ExampleService struct {
@@ -13,7 +13,7 @@ type ExampleService struct {
 
 func NewExampleService(
 	exRep ports.IExampleRepository,
-) ports.IExampleService {
+) *ExampleService {
 	return &ExampleService{
 		exRep: exRep,
 	}
