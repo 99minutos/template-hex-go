@@ -2,10 +2,10 @@ package mongo
 
 import (
 	"context"
-	"example-service/internal/domain/entities"
-	"example-service/internal/domain/ports"
-	"example-service/internal/infrastructure/driven/core"
-	"example-service/internal/infrastructure/driven/tracer"
+	"service/internal/domain/entities"
+	"service/internal/domain/ports"
+	"service/internal/infrastructure/driven/core"
+	"service/internal/infrastructure/driven/tracer"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

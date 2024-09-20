@@ -2,7 +2,7 @@ package ports
 
 import (
 	"context"
-	"example-service/internal/domain/entities"
+	"service/internal/domain/entities"
 )
 
 // Crea tus repositorios con las funciones que necesites

@@ -1,10 +1,10 @@
 package rest
 
 import (
-	"example-service/internal/implementation/example"
-	"example-service/internal/infrastructure/driven/core"
-	driven_fiber "example-service/internal/infrastructure/driven/fiber_server"
 	"net"
+	"service/internal/implementation/example"
+	"service/internal/infrastructure/driven/core"
+	driven_fiber "service/internal/infrastructure/driven/fiber_server"
 
 	"github.com/gofiber/fiber/v2"
 )

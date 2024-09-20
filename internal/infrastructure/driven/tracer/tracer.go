@@ -2,8 +2,8 @@ package tracer
 
 import (
 	"context"
-	"example-service/internal/infrastructure/driven/core"
 	"fmt"
+	"service/internal/infrastructure/driven/core"
 	"sync"
 
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"

@@ -2,8 +2,8 @@ package core
 
 import (
 	"context"
-	"example-service/internal/domain"
 	"fmt"
+	"service/internal/domain"
 	"sync"
 
 	"github.com/joho/godotenv"

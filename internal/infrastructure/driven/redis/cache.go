@@ -2,8 +2,8 @@ package redis
 
 import (
 	"context"
-	"example-service/internal/infrastructure/driven/core"
 	"net/url"
+	"service/internal/infrastructure/driven/core"
 	"strings"
 
 	"github.com/redis/go-redis/extra/redisotel/v9"

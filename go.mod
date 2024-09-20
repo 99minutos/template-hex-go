@@ -1,4 +1,4 @@
-module example-service
+module service
 
 go 1.22.6
 

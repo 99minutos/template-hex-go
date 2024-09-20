@@ -3,6 +3,8 @@ package fiber_server
 import (
 	"errors"
 	"fmt"
+	"service/internal/domain/errcodes"
+
 	"github.com/bytedance/sonic"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -25,6 +27,10 @@ func NewFiberServer() *FiberServer {
 			var e *fiber.Error
 			if errors.As(err, &e) {
 				code = e.Code
+			}
+			var eCus *errcodes.ErrorCode
+			if errors.As(err, &eCus) {
+				code = eCus.Code
 			}
 			return ctx.Status(code).JSON(RestError{Cause: err.Error()})
 		},

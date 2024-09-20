@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	services "example-service/internal/implementation/example"
-	"example-service/internal/infrastructure/adapters/repository/mongo"
-	"example-service/internal/infrastructure/driven/cmux"
-	"example-service/internal/infrastructure/driven/core"
-	mongodriven "example-service/internal/infrastructure/driven/mongodb"
-	redisdriven "example-service/internal/infrastructure/driven/redis"
-	"example-service/internal/infrastructure/driver/rest"
+	services "service/internal/implementation/example"
+	"service/internal/infrastructure/adapters/repository/mongo"
+	"service/internal/infrastructure/driven/cmux"
+	"service/internal/infrastructure/driven/core"
+	mongodriven "service/internal/infrastructure/driven/mongodb"
+	redisdriven "service/internal/infrastructure/driven/redis"
+	"service/internal/infrastructure/driver/rest"
 	"sync"
 )
 

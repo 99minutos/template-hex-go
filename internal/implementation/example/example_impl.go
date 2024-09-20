@@ -2,9 +2,9 @@ package example
 
 import (
 	"context"
-	"example-service/internal/domain/entities"
-	"example-service/internal/domain/ports"
-	"example-service/internal/infrastructure/driven/tracer"
+	"service/internal/domain/entities"
+	"service/internal/domain/ports"
+	"service/internal/infrastructure/driven/tracer"
 )
 
 type ExampleService struct {

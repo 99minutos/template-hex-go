@@ -35,7 +35,7 @@ choco install golang
 Debian based
 
 ```shell
-apt install golang-go 
+apt install golang-go
 ```
 
 Mac OS X
@@ -94,18 +94,18 @@ Other installation methods: [Download Golang](https://go.dev/dl/)
 with makefile
 
 ```shell
-make testing-example-service
+make testing-service
 ```
 
 expected output
 
 ```bash
 ============================================================
-Creating new order... 
+Creating new order...
 
 {"id":"6560ec6df49b452dade3e61e","first_name":"John","last_name":"Doe","sub_example":{"sub_example_id":123,"sub_example_name":"subExampleName"}}
 ============================================================
-Searching order from seeder 
+Searching order from seeder
 
 {"id":"656045095ff16ef1a00fd4ef","first_name":"John","last_name":"Doe","sub_example":{"sub_example_id":123,"sub_example_name":"subExampleName"}}
 ============================================================

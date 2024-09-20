@@ -10,15 +10,17 @@ const (
 )
 
 type ErrorCode struct {
-	Code MessageCode `json:"code"`
+	Code    int         `json:"code"`
+	Message MessageCode `json:"message"`
 }
 
-func NewErrorCode(code MessageCode) ErrorCode {
+func NewErrorCode(code int, message MessageCode) ErrorCode {
 	return ErrorCode{
-		Code: code,
+		Code:    code,
+		Message: message,
 	}
 }
 
 func (e ErrorCode) Error() string {
-	return string(e.Code)
+	return string(e.Message)
 }
