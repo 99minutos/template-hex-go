@@ -16,7 +16,6 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"go.opentelemetry.io/otel/trace"
-	"go.uber.org/zap"
 )
 
 var (
@@ -34,18 +33,16 @@ func GetTracer() trace.Tracer {
 
 func NewTracer() trace.Tracer {
 	ctx := context.Background()
-	defaultLog := core.GetDefaultLogger()
-	defaultLog.Infow("Tracer is starting...")
 	config := core.GetEnviroments()
 
-	exporter, err := getExporter(config.ProjectId, defaultLog)
+	exporter, err := getExporter(config.ProjectId)
 	if err != nil {
-		defaultLog.Errorw("failed creating tracer", "error", err)
+		println("failed creating tracer", "error", err)
 	}
 
 	res, err := newResource(ctx, config.AppName)
 	if err != nil {
-		defaultLog.Errorw("failed creating tracer", "error", err)
+		println("failed creating tracer", "error", err)
 	}
 
 	provider := sdktrace.NewTracerProvider(
@@ -53,11 +50,10 @@ func NewTracer() trace.Tracer {
 		sdktrace.WithBatcher(exporter),
 	)
 	tracer := otel.Tracer(config.AppName)
-	defaultLog.Infow("Tracer has started.")
 	defer func(provider *sdktrace.TracerProvider, ctx context.Context) {
 		err := provider.ForceFlush(ctx)
 		if err != nil {
-			defaultLog.Warnw("provider.ForceFlush: %v", err)
+			println("provider.ForceFlush: %v", err)
 		}
 	}(provider, ctx)
 	otel.SetTextMapPropagator(
@@ -71,13 +67,11 @@ func NewTracer() trace.Tracer {
 	return tracer
 }
 
-func getExporter(projectId string, log zap.SugaredLogger) (sdktrace.SpanExporter, error) {
+func getExporter(projectId string) (sdktrace.SpanExporter, error) {
 	gcpExporter, err := texporter.New(texporter.WithProjectID(projectId))
 	if err != nil {
-		log.Warnw("Failed to create the Google Cloud Trace exporter, using console exporter instead", "err", err)
 		stdoutExporter, err := stdouttrace.New()
 		if err != nil {
-			log.Errorw("Failed to create the console exporter", "err", err)
 			return nil, err
 		}
 		return stdoutExporter, nil

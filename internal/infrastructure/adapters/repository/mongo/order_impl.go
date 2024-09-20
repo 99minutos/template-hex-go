@@ -4,7 +4,7 @@ import (
 	"context"
 	"service/internal/domain/entities"
 	"service/internal/domain/ports"
-	"service/internal/infrastructure/driven/core"
+	"service/internal/infrastructure/driven/logs"
 	"service/internal/infrastructure/driven/tracer"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -61,7 +61,7 @@ func (r *ExampleRepository) GetExample(ctx context.Context, exampleId string) (*
 	ctx, span := tracer.GetTracer().Start(ctx, "Repository/Example/GetExample")
 	defer span.End()
 
-	log := core.GetDefaultLogger()
+	log := logs.GetLogger()
 
 	collection := r.database.Collection(r.tableName)
 	objectId, err := primitive.ObjectIDFromHex(exampleId)

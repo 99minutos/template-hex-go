@@ -1,6 +1,7 @@
 package errcodes
 
 type MessageCode string
+type DescriptionFromCode string
 
 const (
 	Generic500Error          MessageCode = "GENERIC_500_ERROR"
@@ -9,15 +10,28 @@ const (
 	UnauthorizedRole         MessageCode = "UNAUTHORIZED_ROLE"
 )
 
+const (
+	Generic500ErrorDesc DescriptionFromCode = "Error interno del servidor"
+)
+
 type ErrorCode struct {
-	Code    int         `json:"code"`
-	Message MessageCode `json:"message"`
+	Code        int                 `json:"code"`
+	Message     MessageCode         `json:"message"`
+	Description DescriptionFromCode `json:"description"`
 }
 
-func NewErrorCode(code int, message MessageCode) ErrorCode {
+func NewError(code int, message MessageCode) ErrorCode {
 	return ErrorCode{
 		Code:    code,
 		Message: message,
+	}
+}
+
+func NewErrorWithDescription(code int, message MessageCode, description DescriptionFromCode) ErrorCode {
+	return ErrorCode{
+		Code:        code,
+		Message:     message,
+		Description: description,
 	}
 }
 

@@ -2,7 +2,7 @@ package mongodbrepo
 
 import (
 	"context"
-	"service/internal/infrastructure/driven/core"
+	"service/internal/infrastructure/driven/logs"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -14,20 +14,21 @@ var mongoClient *mongo.Client
 var mongoDatabase *mongo.Database
 
 func ConnectMongoDB(ctx context.Context, mongoUrl string, database string, appName string) {
-	log := core.GetDefaultLogger()
+	log := logs.GetLogger()
 
 	clientOptions := options.Client()
 	clientOptions.SetMonitor(otelmongo.NewMonitor())
 	clientOptions.ApplyURI(mongoUrl)
 	clientOptions.SetAppName(appName)
-	client, err := mongo.NewClient(clientOptions)
+	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	err = client.Connect(ctx)
+	err = client.Ping(ctx, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalw("MongoDB is not connected", "error", err)
+		panic(err)
 	}
 
 	databaseOptions := options.Database()
@@ -42,7 +43,7 @@ func GetDatabase() *mongo.Database {
 }
 
 func DisconnectMongoDB(ctx context.Context) {
-	log := core.GetDefaultLogger()
+	log := logs.GetLogger()
 	if mongoClient == nil {
 		log.Fatalw("mongodb client is nil")
 		return

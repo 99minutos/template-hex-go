@@ -2,7 +2,7 @@ package cmux
 
 import (
 	"net"
-	"service/internal/infrastructure/driven/core"
+	"service/internal/infrastructure/driven/logs"
 
 	"github.com/soheilhy/cmux"
 )
@@ -17,7 +17,7 @@ type CmuxContainer struct {
 func NewCmux(port string) *CmuxContainer {
 	l, err := net.Listen("tcp", ":"+port)
 	if err != nil {
-		log := core.GetDefaultLogger()
+		log := logs.GetLogger()
 		log.Fatalw("unable to listen", "error", err)
 	}
 	m := cmux.New(l)

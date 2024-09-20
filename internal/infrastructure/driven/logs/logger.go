@@ -1,6 +1,10 @@
-package core
+package logs
 
 import (
+	"context"
+	"fmt"
+	"service/internal/infrastructure/driven/core"
+	"service/internal/infrastructure/driven/tracer"
 	"sync"
 
 	"go.uber.org/zap"
@@ -23,11 +27,23 @@ func CreateLogger(loggerName string) zap.SugaredLogger {
 	return *log.Sugar().Named(loggerName)
 }
 
-func GetDefaultLogger() zap.SugaredLogger {
+func GetLogger() zap.SugaredLogger {
 	onceLogger.Do(func() {
-		cfg := GetEnviroments()
+		cfg := core.GetEnviroments()
 		logger = CreateLogger(cfg.AppName)
 	})
+
+	return logger
+}
+
+func GetLoggerWithContext(ctx context.Context) zap.SugaredLogger {
+	cfg := core.GetEnviroments()
+	logger = CreateLogger(cfg.AppName)
+
+	_, span := tracer.GetTracer().Start(ctx, "GetLogger")
+	traceId := span.SpanContext().TraceID().String()
+	logger.With("trace_id", traceId)
+	logger.With("logging.googleapis.com/trace", fmt.Sprintf("projects/%s/traces/%s", cfg.ProjectId, traceId))
 
 	return logger
 }

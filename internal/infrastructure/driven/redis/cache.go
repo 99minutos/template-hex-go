@@ -3,7 +3,7 @@ package redis
 import (
 	"context"
 	"net/url"
-	"service/internal/infrastructure/driven/core"
+	"service/internal/infrastructure/driven/logs"
 	"strings"
 
 	"github.com/redis/go-redis/extra/redisotel/v9"
@@ -13,7 +13,7 @@ import (
 var redisClient *redis.Client
 
 func ConnectRedisDB(ctx context.Context, redisUrl string) {
-	log := core.GetDefaultLogger()
+	log := logs.GetLogger()
 	log.Infow("Redis is starting...")
 
 	redisUrlParsed, err := url.Parse(redisUrl)
@@ -44,7 +44,7 @@ func GetRedisClient() *redis.Client {
 	return redisClient
 }
 func DisconnectRedisDB(ctx context.Context) {
-	log := core.GetDefaultLogger()
+	log := logs.GetLogger()
 	if redisClient == nil {
 		log.Fatalw("redis client is nil")
 		return

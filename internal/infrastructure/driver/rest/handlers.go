@@ -3,8 +3,8 @@ package rest
 import (
 	"net"
 	"service/internal/implementation/example"
-	"service/internal/infrastructure/driven/core"
 	driven_fiber "service/internal/infrastructure/driven/fiber_server"
+	"service/internal/infrastructure/driven/logs"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -34,7 +34,7 @@ func (r *RestHandler) InitializeRoutes() {
 
 func (r *RestHandler) Start(is net.Listener) {
 	err := r.Fiber.Server.Listener(is)
-	log := core.GetDefaultLogger()
+	log := logs.GetLogger()
 
 	if err != nil {
 		log.Fatalw("unable to listen", "error", err)

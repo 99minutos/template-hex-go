@@ -15,7 +15,8 @@ type FiberServer struct {
 }
 
 type RestError struct {
-	Cause string `json:"cause"`
+	Cause   string      `json:"cause"`
+	Message interface{} `json:"message,omitempty"`
 }
 
 func NewFiberServer() *FiberServer {
@@ -24,15 +25,34 @@ func NewFiberServer() *FiberServer {
 		JSONDecoder: sonic.Unmarshal,
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
-			var e *fiber.Error
-			if errors.As(err, &e) {
-				code = e.Code
-			}
+			var message interface{} = nil
+
 			var eCus *errcodes.ErrorCode
-			if errors.As(err, &eCus) {
+			var fibErr *fiber.Error
+			var errDis *ErrorDispatcher
+
+			if errors.As(err, &errDis) {
+				code = fiber.StatusUnprocessableEntity
+				message = errDis.errors
+			} else if errors.As(err, &eCus) {
 				code = eCus.Code
+				if eCus.Description != "" {
+					desc := string(eCus.Description)
+					message = &desc
+				}
+			} else if errors.As(err, &fibErr) {
+				code = fibErr.Code
+				message = fibErr.Message
+			} else {
+				code = fiber.StatusInternalServerError
+				message = err.Error()
 			}
-			return ctx.Status(code).JSON(RestError{Cause: err.Error()})
+
+			errCus := RestError{
+				Cause:   err.Error(),
+				Message: message,
+			}
+			return ctx.Status(code).JSON(errCus)
 		},
 	})
 	server.Use(cors.New())
