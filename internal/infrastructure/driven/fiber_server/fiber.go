@@ -1,7 +1,6 @@
 package fiber_server
 
 import (
-	"errors"
 	"fmt"
 	"service/internal/domain/errcodes"
 
@@ -15,7 +14,7 @@ type FiberServer struct {
 }
 
 type RestError struct {
-	Cause   string      `json:"cause"`
+	Cause   interface{} `json:"cause"`
 	Message interface{} `json:"message,omitempty"`
 }
 
@@ -25,31 +24,31 @@ func NewFiberServer() *FiberServer {
 		JSONDecoder: sonic.Unmarshal,
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
+			var cause interface{} = nil
 			var message interface{} = nil
 
-			var eCus *errcodes.ErrorCode
-			var fibErr *fiber.Error
-			var errDis *ErrorDispatcher
-
-			if errors.As(err, &errDis) {
+			switch e := err.(type) {
+			case *ErrorDispatcher:
 				code = fiber.StatusUnprocessableEntity
-				message = errDis.errors
-			} else if errors.As(err, &eCus) {
-				code = eCus.Code
-				if eCus.Description != "" {
-					desc := string(eCus.Description)
+				cause = e.Error()
+				message = e.errors
+			case *errcodes.ErrorCode:
+				code = e.Code
+				cause = e.Message
+				if e.Description != "" {
+					desc := string(e.Description)
 					message = &desc
 				}
-			} else if errors.As(err, &fibErr) {
-				code = fibErr.Code
-				message = fibErr.Message
-			} else {
+			case *fiber.Error:
+				code = e.Code
+				cause = e.Error()
+			default:
 				code = fiber.StatusInternalServerError
-				message = err.Error()
+				cause = err.Error()
 			}
 
 			errCus := RestError{
-				Cause:   err.Error(),
+				Cause:   cause,
 				Message: message,
 			}
 			return ctx.Status(code).JSON(errCus)

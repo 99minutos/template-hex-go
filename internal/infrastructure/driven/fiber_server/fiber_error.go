@@ -13,11 +13,11 @@ func NewErrorDispatcher() *ErrorDispatcher {
 	return &ErrorDispatcher{}
 }
 
-func (e *ErrorDispatcher) AddError(err server.ValidationError) {
-	e.errors = append(e.errors, err)
+func (a *ErrorDispatcher) AddError(err server.ValidationError) {
+	a.errors = append(a.errors, err)
 }
 
-func (e *ErrorDispatcher) Error() string {
-	total := len(e.errors)
+func (a *ErrorDispatcher) Error() string {
+	total := len(a.errors)
 	return fmt.Sprintf("There are %d errors", total)
 }

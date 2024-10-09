@@ -8,10 +8,14 @@ const (
 	Generic422Error          MessageCode = "GENERIC_422_ERROR"
 	GenericInvalidParameters MessageCode = "GENERIC_INVALID_PARAMETERS"
 	UnauthorizedRole         MessageCode = "UNAUTHORIZED_ROLE"
+
+	// Carrier Codes
+	CarrierNotFound          MessageCode = "CARRIER_NOT_FOUND"
+	CarrierCodeAlreadyExists MessageCode = "CARRIER_CODE_ALREADY_EXISTS"
 )
 
 const (
-	Generic500ErrorDesc DescriptionFromCode = "Error interno del servidor"
+	CarrierCodeAlreadyExistsDesc DescriptionFromCode = "El código de la transportadora ya existe"
 )
 
 type ErrorCode struct {
@@ -20,21 +24,21 @@ type ErrorCode struct {
 	Description DescriptionFromCode `json:"description"`
 }
 
-func NewError(code int, message MessageCode) ErrorCode {
-	return ErrorCode{
+func NewError(code int, message MessageCode) *ErrorCode {
+	return &ErrorCode{
 		Code:    code,
 		Message: message,
 	}
 }
 
-func NewErrorWithDescription(code int, message MessageCode, description DescriptionFromCode) ErrorCode {
-	return ErrorCode{
+func NewErrorWithDescription(code int, message MessageCode, description DescriptionFromCode) *ErrorCode {
+	return &ErrorCode{
 		Code:        code,
 		Message:     message,
 		Description: description,
 	}
 }
 
-func (e ErrorCode) Error() string {
+func (e *ErrorCode) Error() string {
 	return string(e.Message)
 }

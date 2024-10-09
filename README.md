@@ -147,7 +147,7 @@ curl --location '127.0.0.1:8080/api/v1/order/656045095ff16ef1a00fd4ef'
 │       └── main.go
 ├── docker
 │   ├── Dockerfile.dev
-│   └── Dockerfile.prod
+│   └── Dockerfile
 ├── docker-compose.yml
 ├── docs
 │   ├── MODEL.md

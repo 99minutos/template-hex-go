@@ -1,4 +1,4 @@
-FROM golang:1.22.6-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
@@ -7,7 +7,7 @@ ENV GO111MODULE=on \
 
 WORKDIR /app
 
-RUN apk add upx git gcc musl-dev
+RUN apk add upx git gcc musl-dev tzdata
 
 ARG ARG_GITHUB_USER
 ARG ARG_GITHUB_TOKEN
@@ -27,12 +27,16 @@ COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 COPY . .
 
-RUN go build -o bin/example cmd/example/main.go
+RUN go build -o bin/service cmd/service/main.go
+RUN strip /app/bin/service
+RUN upx -q -9 /app/bin/service
 
 
 ## Create a minimal docker image
 FROM scratch
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /app/bin/example /bin/example
+COPY --from=builder /app/bin/service /bin/service
+ENV TZ UTC
 
-CMD [ "/bin/example" ]
+CMD [ "/bin/service" ]
