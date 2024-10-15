@@ -1,8 +1,8 @@
 package server
 
 type PaginationParams struct {
-	page  int `json:"page"`
-	limit int `json:"limit"`
+	Page  int `json:"page"`
+	Limit int `json:"limit"`
 }
 
 // NewPaginationParams creates a new instance of PaginationParams with the given page and limit
@@ -12,22 +12,22 @@ type PaginationParams struct {
 // limit - the number of items per page
 func NewPaginationParams(page int, limit int) *PaginationParams {
 	return &PaginationParams{
-		page:  page,
-		limit: limit,
+		Page:  page,
+		Limit: limit,
 	}
 }
 
 func (p *PaginationParams) GetPage() *int64 {
-	value := int64(p.page)
+	value := int64(p.Page)
 	return &value
 }
 
 func (p *PaginationParams) GetLimit() *int64 {
-	value := int64(p.limit)
+	value := int64(p.Limit)
 	return &value
 }
 
 func (p *PaginationParams) GetSkip() *int64 {
-	value := int64(p.page * p.limit)
+	value := int64(p.Page * p.Limit)
 	return &value
 }
