@@ -1,5 +1,7 @@
 package server
 
+import "github.com/bytedance/sonic"
+
 type PaginationParams struct {
 	Page  int `json:"page"`
 	Limit int `json:"limit"`
@@ -30,4 +32,23 @@ func (p *PaginationParams) GetLimit() *int64 {
 func (p *PaginationParams) GetSkip() *int64 {
 	value := int64(p.Page * p.Limit)
 	return &value
+}
+
+// GenericPaginationQuery - a generic query struct that can be used to query any type of data
+type GenericPaginationQuery struct {
+	Query      interface{}       `json:"query"`
+	Pagination *PaginationParams `json:"pagination"`
+}
+
+func (a *GenericPaginationQuery) DecodeQuery(someType interface{}) error {
+	jsonString, err := sonic.MarshalString(a.Query)
+	if err != nil {
+		return err
+	}
+	return sonic.UnmarshalString(jsonString, someType)
+}
+
+type GenericPaginationResponse struct {
+	Total int64       `json:"total"`
+	Data  interface{} `json:"data"`
 }
