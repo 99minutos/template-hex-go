@@ -16,6 +16,7 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"go.opentelemetry.io/otel/trace"
+	"google.golang.org/api/option"
 )
 
 var (
@@ -68,7 +69,12 @@ func NewTracer() trace.Tracer {
 }
 
 func getExporter(projectId string) (sdktrace.SpanExporter, error) {
-	gcpExporter, err := texporter.New(texporter.WithProjectID(projectId))
+	gcpExporter, err := texporter.New(
+		texporter.WithProjectID(projectId),
+		texporter.WithTraceClientOptions(
+			[]option.ClientOption{option.WithTelemetryDisabled()},
+		),
+	)
 	if err != nil {
 		stdoutExporter, err := stdouttrace.New()
 		if err != nil {
