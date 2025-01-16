@@ -47,3 +47,4 @@ availableSecrets:
 
 options:
   machineType: "N1_HIGHCPU_8"
+  logging: CLOUD_LOGGING_ONLY
