@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	services "service/internal/implementation/example"
 	"service/internal/infrastructure/adapters/repository/mongo"
 	"service/internal/infrastructure/driven/cmux"
@@ -9,7 +10,6 @@ import (
 	mongodriven "service/internal/infrastructure/driven/mongodb"
 	redisdriven "service/internal/infrastructure/driven/redis"
 	"service/internal/infrastructure/driver/rest"
-	"sync"
 )
 
 func main() {
@@ -17,30 +17,14 @@ func main() {
 	cfg := core.GetEnviroments()
 
 	// Initialize database
-	wg := &sync.WaitGroup{}
-	callbacks := []func(wait *sync.WaitGroup){
-		func(wait *sync.WaitGroup) {
-			defer wg.Done()
-			mongodriven.ConnectMongoDB(ctx, cfg.MongoUrl, cfg.MongoDatabase, cfg.AppName)
-		},
-		func(wait *sync.WaitGroup) {
-			defer wg.Done()
-			redisdriven.ConnectRedisDB(ctx, cfg.RedisUrl)
-		},
-		// Add more connections here
-	}
+	mongoSocket := mongodriven.NewMongoConnection(ctx, cfg.MongoUrl, cfg.MongoDatabase, cfg.AppName)
+	redisSocket := redisdriven.NewRedisConnection(ctx, cfg.RedisUrl)
 
-	wg.Add(len(callbacks))
-	for _, cb := range callbacks {
-		go cb(wg)
-	}
-	wg.Wait()
-
-	defer mongodriven.DisconnectMongoDB(ctx)
-	defer redisdriven.DisconnectRedisDB(ctx)
+	defer mongoSocket.DisconnectMongoDB(ctx)
+	defer redisSocket.DisconnectRedisDB(ctx)
 
 	// Initialize repositories
-	exampleRep := mongo.NewExampleRepository(mongodriven.GetDatabase())
+	exampleRep := mongo.NewExampleRepository(mongoSocket.GetDatabase())
 
 	// Initialize services
 	exampleSrv := services.NewExampleService(exampleRep)
