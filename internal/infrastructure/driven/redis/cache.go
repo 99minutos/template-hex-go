@@ -3,18 +3,21 @@ package redis
 import (
 	"context"
 	"net/url"
-	"service/internal/infrastructure/driven/logs"
 	"strings"
+
+	"service/internal/infrastructure/driven/logs"
 
 	"github.com/redis/go-redis/extra/redisotel/v9"
 	"github.com/redis/go-redis/v9"
 )
 
-var redisClient *redis.Client
+type RedisRepository struct {
+	redisClient *redis.Client
+}
 
-func ConnectRedisDB(ctx context.Context, redisUrl string) {
-	log := logs.GetLogger()
-	log.Infow("Redis is starting...")
+func NewRedisConnection(ctx context.Context, redisUrl string) *RedisRepository {
+	debugger := logs.GetLogger()
+	debugger.Infow("Redis is starting...")
 
 	redisUrlParsed, err := url.Parse(redisUrl)
 	password, _ := redisUrlParsed.User.Password()
@@ -25,36 +28,38 @@ func ConnectRedisDB(ctx context.Context, redisUrl string) {
 	})
 
 	if rClient == nil {
-		log.Errorw("unable to connect to redis instance", "error", err)
+		debugger.Errorw("unable to connect to redis instance", "err", err)
 	}
 
 	if err != nil {
-		log.Errorw("error creating redis connection pool", "error", err)
+		debugger.Errorw("error creating redis connection pool", "err", err)
 	}
 
 	if err := redisotel.InstrumentTracing(rClient); err != nil {
-		log.Errorw("error creating telemetry for redis", "error", err)
+		debugger.Errorw("error creating telemetry for redis", "err", err)
 	}
 
-	redisClient = rClient
-	log.Infow("Redis is connected")
+	debugger.Infow("Redis is connected")
+	return &RedisRepository{
+		redisClient: rClient,
+	}
 }
 
-func GetRedisClient() *redis.Client {
-	return redisClient
+func (r *RedisRepository) GetRedisClient() *redis.Client {
+	return r.redisClient
 }
-func DisconnectRedisDB(ctx context.Context) {
-	log := logs.GetLogger()
-	if redisClient == nil {
-		log.Fatalw("redis client is nil")
+
+func (r *RedisRepository) DisconnectRedisDB(ctx context.Context) {
+	debugger := logs.GetLogger()
+	if r.redisClient == nil {
+		debugger.Fatalw("redis client is nil")
 		return
 	}
-	err := redisClient.Close()
+	err := r.redisClient.Close()
 	if err != nil {
-		log.Infow("disconnected from redis failed", "error", err)
+		debugger.Infow("disconnected from redis failed")
 	} else {
-
-		log.Infow("disconnected from redis")
+		debugger.Infow("disconnected from redis")
 	}
 }
 

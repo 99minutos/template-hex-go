@@ -2,6 +2,7 @@ package mongodbrepo
 
 import (
 	"context"
+
 	"service/internal/infrastructure/driven/logs"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,49 +11,49 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo"
 )
 
-var mongoClient *mongo.Client
-var mongoDatabase *mongo.Database
+type MongoRepository struct {
+	mongoClient   *mongo.Client
+	mongoDatabase *mongo.Database
+}
 
-func ConnectMongoDB(ctx context.Context, mongoUrl string, database string, appName string) {
-	log := logs.GetLogger()
+func NewMongoConnection(ctx context.Context, mongoUrl string, appName string, database string) *MongoRepository {
+	debugger := logs.GetLogger()
+	debugger.Infow("MongoDB is starting...")
 
 	clientOptions := options.Client()
 	clientOptions.SetMonitor(otelmongo.NewMonitor())
 	clientOptions.ApplyURI(mongoUrl)
 	clientOptions.SetAppName(appName)
+	clientOptions.SetCompressors([]string{"zstd", "zlib"})
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
-		panic(err)
-	}
-
-	err = client.Ping(ctx, nil)
-	if err != nil {
-		log.Fatalw("MongoDB is not connected", "error", err)
-		panic(err)
+		debugger.Fatalw("Error creating client for MongoDB", "error", err)
 	}
 
 	databaseOptions := options.Database()
 
-	mongoClient = client
-	mongoDatabase = mongoClient.Database(database, databaseOptions)
-	log.Infow("MongoDB is connected")
+	debugger.Infow("MongoDB is connected")
+	return &MongoRepository{
+		mongoClient:   client,
+		mongoDatabase: client.Database(database, databaseOptions),
+	}
 }
 
-func GetDatabase() *mongo.Database {
-	return mongoDatabase
+func (m *MongoRepository) GetDatabase() *mongo.Database {
+	return m.mongoDatabase
 }
 
-func DisconnectMongoDB(ctx context.Context) {
-	log := logs.GetLogger()
-	if mongoClient == nil {
-		log.Fatalw("mongodb client is nil")
+func (m *MongoRepository) DisconnectMongoDB(ctx context.Context) {
+	debugger := logs.GetLogger()
+	if m.mongoClient == nil {
+		debugger.Fatalw("MongoDB client is nil")
 		return
 	}
 
-	err := mongoClient.Disconnect(ctx)
+	err := m.mongoClient.Disconnect(ctx)
 	if err != nil {
-		log.Fatalw("mongodb disconnect error", "error", err)
+		debugger.Fatalw("Error disconnecting from MongoDB", "error", err)
 	}
 
-	log.Infow("mongodb is disconnected")
+	debugger.Infow("MongoDB is disconnected")
 }
