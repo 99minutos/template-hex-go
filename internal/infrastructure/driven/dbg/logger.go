@@ -1,11 +1,12 @@
-package logs
+package dbg
 
 import (
 	"context"
 	"fmt"
+	"sync"
+
 	"service/internal/infrastructure/driven/core"
 	"service/internal/infrastructure/driven/tracer"
-	"sync"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

@@ -2,9 +2,10 @@ package mongo
 
 import (
 	"context"
+
 	"service/internal/domain/entities"
 	"service/internal/domain/ports"
-	"service/internal/infrastructure/driven/logs"
+	"service/internal/infrastructure/driven/dbg"
 	"service/internal/infrastructure/driven/tracer"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -61,13 +62,12 @@ func (r *ExampleRepository) GetExample(ctx context.Context, exampleId string) (*
 	ctx, span := tracer.GetTracer().Start(ctx, "Repository/Example/GetExample")
 	defer span.End()
 
-	log := logs.GetLogger()
+	log := dbg.GetLogger()
 
 	collection := r.database.Collection(r.tableName)
 	objectId, err := primitive.ObjectIDFromHex(exampleId)
 	if err != nil {
 		log.Errorw("error parsing objectId", "error", err)
-
 	}
 	query := bson.M{
 		"_id": objectId,
@@ -76,7 +76,6 @@ func (r *ExampleRepository) GetExample(ctx context.Context, exampleId string) (*
 	err = collection.FindOne(ctx, query).Decode(&example)
 	if err != nil {
 		log.Errorw("error getting example", "error", err)
-
 	}
 	return example, err
 }

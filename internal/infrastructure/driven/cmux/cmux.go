@@ -2,7 +2,8 @@ package cmux
 
 import (
 	"net"
-	"service/internal/infrastructure/driven/logs"
+
+	"service/internal/infrastructure/driven/dbg"
 
 	"github.com/soheilhy/cmux"
 )
@@ -17,7 +18,7 @@ type CmuxContainer struct {
 func NewCmux(port string) *CmuxContainer {
 	l, err := net.Listen("tcp", ":"+port)
 	if err != nil {
-		log := logs.GetLogger()
+		log := dbg.GetLogger()
 		log.Fatalw("unable to listen", "error", err)
 	}
 	m := cmux.New(l)
@@ -33,15 +34,19 @@ func NewCmux(port string) *CmuxContainer {
 func (c *CmuxContainer) GetGrpcListener() net.Listener {
 	return c.grpcL
 }
+
 func (c *CmuxContainer) GetHttpListener() net.Listener {
 	return c.httpL
 }
+
 func (c *CmuxContainer) SetGrpcListener(l net.Listener) {
 	c.grpcL = l
 }
+
 func (c *CmuxContainer) SetHttpListener(l net.Listener) {
 	c.httpL = l
 }
+
 func (c *CmuxContainer) SetCMux(m cmux.CMux) {
 	c.cmux = m
 }

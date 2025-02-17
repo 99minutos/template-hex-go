@@ -3,7 +3,7 @@ package mongodbrepo
 import (
 	"context"
 
-	"service/internal/infrastructure/driven/logs"
+	"service/internal/infrastructure/driven/dbg"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -17,7 +17,7 @@ type MongoRepository struct {
 }
 
 func NewMongoConnection(ctx context.Context, mongoUrl string, appName string, database string) *MongoRepository {
-	debugger := logs.GetLogger()
+	debugger := dbg.GetLogger()
 	debugger.Infow("MongoDB is starting...")
 
 	clientOptions := options.Client()
@@ -44,7 +44,7 @@ func (m *MongoRepository) GetDatabase() *mongo.Database {
 }
 
 func (m *MongoRepository) DisconnectMongoDB(ctx context.Context) {
-	debugger := logs.GetLogger()
+	debugger := dbg.GetLogger()
 	if m.mongoClient == nil {
 		debugger.Fatalw("MongoDB client is nil")
 		return
