@@ -9,4 +9,5 @@ type AppConfig struct {
 	MongoUrl      string `env:"MONGO_URL, default="`
 	MongoDatabase string `env:"MONGO_DATABASE, default="`
 	RedisUrl      string `env:"REDIS_URL, default="`
+	RedisBasePath string `env:"REDIS_BASE_PATH, default="`
 }

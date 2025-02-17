@@ -18,7 +18,7 @@ func main() {
 
 	// Initialize database
 	mongoSocket := mongodriven.NewMongoConnection(ctx, cfg.MongoUrl, cfg.MongoDatabase, cfg.AppName)
-	redisSocket := redisdriven.NewRedisConnection(ctx, cfg.RedisUrl)
+	redisSocket := redisdriven.NewRedisConnection(ctx, cfg.RedisUrl, cfg.RedisBasePath)
 
 	defer mongoSocket.DisconnectMongoDB(ctx)
 	defer redisSocket.DisconnectRedisDB(ctx)

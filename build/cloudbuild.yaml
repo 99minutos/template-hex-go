@@ -34,6 +34,7 @@ steps:
       - "--set-env-vars=MONGO_DATABASE=$_MONGO_DATABASE"
       - "--set-secrets=^##^MONGO_URL=$_MONGO_URL"
       - "--set-secrets=^##^REDIS_URL=$_REDIS_URL"
+      - "--set-env-vars=REDIS_BASE_PATH=$_REDIS_BASE_PATH"
 
 substitutions:
   _LOG_LEVEL: "production"
