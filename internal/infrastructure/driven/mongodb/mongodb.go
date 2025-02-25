@@ -16,7 +16,7 @@ type MongoRepository struct {
 	mongoDatabase *mongo.Database
 }
 
-func NewMongoConnection(ctx context.Context, mongoUrl string, appName string, database string) *MongoRepository {
+func NewMongoConnection(ctx context.Context, mongoUrl string, database string, appName string) *MongoRepository {
 	debugger := dbg.GetLogger()
 	debugger.Infow("MongoDB is starting...")
 
