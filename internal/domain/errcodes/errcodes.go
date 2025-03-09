@@ -1,7 +1,8 @@
 package errcodes
 
-type MessageCode string
-type DescriptionFromCode string
+type (
+	MessageCode string
+)
 
 const (
 	Generic500Error          MessageCode = "GENERIC_500_ERROR"
@@ -9,19 +10,15 @@ const (
 	GenericInvalidParameters MessageCode = "GENERIC_INVALID_PARAMETERS"
 	UnauthorizedRole         MessageCode = "UNAUTHORIZED_ROLE"
 
-	// Carrier Codes
-	CarrierNotFound          MessageCode = "CARRIER_NOT_FOUND"
-	CarrierCodeAlreadyExists MessageCode = "CARRIER_CODE_ALREADY_EXISTS"
-)
-
-const (
-	CarrierCodeAlreadyExistsDesc DescriptionFromCode = "El código de la transportadora ya existe"
+	// Example Codes
+	ExampleNotFound          MessageCode = "EXAMPLE_NOT_FOUND"
+	ExampleCodeAlreadyExists MessageCode = "EXAMPLE_CODE_ALREADY_EXISTS"
 )
 
 type ErrorCode struct {
-	Code        int                 `json:"code"`
-	Message     MessageCode         `json:"message"`
-	Description DescriptionFromCode `json:"description"`
+	Code        int         `json:"code"`
+	Message     MessageCode `json:"message"`
+	Description string      `json:"description"`
 }
 
 func NewError(code int, message MessageCode) *ErrorCode {
@@ -31,7 +28,7 @@ func NewError(code int, message MessageCode) *ErrorCode {
 	}
 }
 
-func NewErrorWithDescription(code int, message MessageCode, description DescriptionFromCode) *ErrorCode {
+func NewErrorWithDescription(code int, message MessageCode, description string) *ErrorCode {
 	return &ErrorCode{
 		Code:        code,
 		Message:     message,
