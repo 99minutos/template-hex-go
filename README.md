@@ -22,7 +22,7 @@ Microservice designed to control 99minutos something
 
 | Software | Version |
 |:---------|:--------|
-| Go       | 1.21.X  |
+| Go       | 1.23.X  |
 
 ### Install Go
 
@@ -127,72 +127,81 @@ curl --location '127.0.0.1:8080/api/v1/order/656045095ff16ef1a00fd4ef'
 
 ## Built with
 
-- IntelliJ Ultimate with go plugin ( recommended )
-- IntelliJ Goland
-- Visual Studio Code
+- [IntelliJ Ultimate with go plugin ( recommended )](https://www.jetbrains.com/idea/)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Zed](https://zed.dev/)
 
 ## Structure
 
 ```shell
 <service-name>
 .
-├── CHANGELOG.md
-├── CHANGELOG.template.md
-├── Makefile
-├── README.md
 ├── build
 │   └── cloudbuild.yaml
+├── CHANGELOG.md
+├── CHANGELOG.template.md
 ├── cmd
 │   └── service
 │       └── main.go
 ├── docker
-│   ├── Dockerfile.dev
-│   └── Dockerfile
+│   ├── Dockerfile
+│   └── Dockerfile.dev
 ├── docker-compose.yml
-├── docs
-│   ├── MODEL.md
-│   ├── STATE-MACHINE.md
-│   └── TRANSITIONS.md
 ├── go.mod
 ├── go.sum
-└── internal
-    ├── domain
-    │   ├── entities
-    │   │   └── example.go
-    │   ├── envs.go
-    │   └── ports
-    │       └── example_repo_iface.go
-    ├── implementation
-    │   └── example
-    │       └── example_impl.go
-    └── infrastructure
-        ├── adapters
-        │   └── repository
-        │       └── mongo
-        │           ├── order_impl.go
-        │           └── seeders
-        │               └── examples.json
-        ├── driven
-        │   ├── cmux
-        │   │   └── cmux.go
-        │   ├── core
-        │   │   ├── envs.go
-        │   │   └── logger.go
-        │   ├── fiber_server
-        │   │   └── fiber.go
-        │   ├── mongodb
-        │   │   └── mongodb.go
-        │   ├── redis
-        │   │   └── cache.go
-        │   └── tracer
-        │       └── tracer.go
-        └── driver
-            ├── grpc
-            │   ├── domain_to_grpc.go
-            │   ├── handlers.go
-            │   └── server.go
-            └── rest
-                └── handlers.go
+├── internal
+│   ├── domain
+│   │   ├── entities
+│   │   │   └── example.go
+│   │   ├── envs.go
+│   │   ├── errcodes
+│   │   │   └── errcodes.go
+│   │   ├── ports
+│   │   │   └── example_repo_iface.go
+│   │   ├── pubsub.go
+│   │   └── server
+│   │       ├── error.go
+│   │       └── pagination.go
+│   ├── helpers
+│   │   └── shortcodes
+│   │       └── validate.go
+│   ├── implementation
+│   │   └── example
+│   │       └── example_impl.go
+│   └── infrastructure
+│       ├── adapters
+│       │   └── repository
+│       │       └── mongo
+│       │           ├── order_impl.go
+│       │           └── seeders
+│       │               └── examples.json
+│       ├── driven
+│       │   ├── cmux
+│       │   │   └── cmux.go
+│       │   ├── core
+│       │   │   └── envs.go
+│       │   ├── dbg
+│       │   │   └── logger.go
+│       │   ├── fiber_server
+│       │   │   ├── fiber_error.go
+│       │   │   └── fiber.go
+│       │   ├── mongodb
+│       │   │   └── mongodb.go
+│       │   ├── redis
+│       │   │   └── cache.go
+│       │   ├── tracer
+│       │   │   └── tracer.go
+│       │   └── validation
+│       │       └── validate.go
+│       └── driver
+│           ├── grpc
+│           │   ├── domain_to_grpc.go
+│           │   ├── handlers.go
+│           │   └── server.go
+│           └── rest
+│               └── handlers.go
+├── Makefile
+└── README.md
 
 
 ```
@@ -215,18 +224,3 @@ The architecture layer in software design provides the structural blueprint for 
 components such as the domain, implementation, and presentation layers interact and are organized. This layer focuses on
 aspects like scalability, maintainability, and technology stack, ensuring that the application's overall structure
 supports its requirements and goals.
-
-## Infrastructure dependencies
-
-| Software | Version |
-|:---------|:--------|
-| MongoDB  | >=7.x   |
-| Redis    | >=6.x   |
-
-## Data Model
-
-you can see the data model in the following link -> [Data Model](docs/MODEL.md)
-
-## Changelog
-
-you can see the changelog in the following link -> [Changelog](CHANGELOG.md)
