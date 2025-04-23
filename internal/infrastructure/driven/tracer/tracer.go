@@ -3,8 +3,9 @@ package tracer
 import (
 	"context"
 	"fmt"
-	"service/internal/infrastructure/driven/core"
 	"sync"
+
+	"service/internal/infrastructure/driven/core"
 
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	gcppropagator "github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator"
@@ -34,7 +35,7 @@ func GetTracer() trace.Tracer {
 
 func NewTracer() trace.Tracer {
 	ctx := context.Background()
-	config := core.GetEnviroments()
+	config := core.GetEnvironments()
 
 	exporter, err := getExporter(config.ProjectId)
 	if err != nil {
@@ -97,7 +98,6 @@ func newResource(ctx context.Context, appName string) (*resource.Resource, error
 			semconv.ServiceNameKey.String(appName),
 		),
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to create resource for telemetry: %w", err)
 	}

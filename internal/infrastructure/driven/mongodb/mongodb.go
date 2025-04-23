@@ -30,6 +30,11 @@ func NewMongoConnection(ctx context.Context, mongoUrl string, database string, a
 		debugger.Fatalw("Error creating client for MongoDB", "error", err)
 	}
 
+	err = client.Ping(ctx, nil)
+	if err != nil {
+		debugger.Fatalw("Error pinging MongoDB", "error", err)
+	}
+
 	databaseOptions := options.Database()
 
 	debugger.Infow("MongoDB is connected")

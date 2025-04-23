@@ -14,7 +14,7 @@ import (
 
 func main() {
 	ctx := context.Background()
-	cfg := core.GetEnviroments()
+	cfg := core.GetEnvironments()
 
 	// Initialize database
 	mongoSocket := mongodriven.NewMongoConnection(ctx, cfg.MongoUrl, cfg.MongoDatabase, cfg.AppName)

@@ -3,8 +3,9 @@ package core
 import (
 	"context"
 	"fmt"
-	"service/internal/domain"
 	"sync"
+
+	"service/internal/domain"
 
 	"github.com/joho/godotenv"
 	"github.com/sethvargo/go-envconfig"
@@ -15,7 +16,7 @@ var (
 	onceEnvs   sync.Once
 )
 
-func GetEnviroments() *domain.AppConfig {
+func GetEnvironments() *domain.AppConfig {
 	onceEnvs.Do(func() {
 		appConfigs = initConfigs()
 	})

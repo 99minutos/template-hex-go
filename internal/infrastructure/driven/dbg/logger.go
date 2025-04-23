@@ -30,7 +30,7 @@ func CreateLogger(loggerName string) zap.SugaredLogger {
 
 func GetLogger() zap.SugaredLogger {
 	onceLogger.Do(func() {
-		cfg := core.GetEnviroments()
+		cfg := core.GetEnvironments()
 		logger = CreateLogger(cfg.AppName)
 	})
 
@@ -38,7 +38,7 @@ func GetLogger() zap.SugaredLogger {
 }
 
 func GetLoggerWithContext(ctx context.Context) zap.SugaredLogger {
-	cfg := core.GetEnviroments()
+	cfg := core.GetEnvironments()
 	logger = CreateLogger(cfg.AppName)
 
 	_, span := tracer.GetTracer().Start(ctx, "GetLogger")
