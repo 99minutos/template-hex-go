@@ -1,0 +1,78 @@
+# Project Analysis & AI Guidelines
+
+## 1. Project Overview
+**Architecture:** Hexagonal Architecture (Ports and Adapters).
+**Language:** Go (Golang).
+**Web Framework:** Fiber.
+**Database:** MongoDB (primary), Redis (cache/support).
+**Observability:** OpenTelemetry (Tracing), Zap (Logging).
+**Entry Point:** `cmd/service/main.go`.
+
+## 2. Directory Structure & Responsibilities
+
+- **`cmd/service/main.go`**: Application bootloader. Wiring of dependencies (Repositories, Services, Handlers) and server startup.
+- **`internal/domain`**: The core of the application.
+  - **`entities`**: Pure data structs (DTOs/Models). No logic or external dependencies.
+  - **`ports`**: Interfaces definitions (`IExampleRepository`, etc.). Defines the contract between layers.
+- **`internal/implementation`**: Business logic.
+  - Implements the service layer.
+  - Orchestrates calls to repositories.
+- **`internal/infrastructure`**: Technical details.
+  - **`adapters/repository`**: implementation of repository interfaces (e.g., MongoDB implementation).
+  - **`driver`**: "Driving" adapters (Entry points).
+    - **`rest`**: HTTP Handlers (Fiber).
+    - **`grpc`**: gRPC Handlers.
+  - **`driven`**: "Driven" adapters/Utilities.
+    - **`mongodb`**, **`redis`**: Database connection logic.
+    - **`dbg`**: Logging wrapper (Zap).
+    - **`tracer`**: OpenTelemetry wrapper.
+    - **`cmux`**: Connection multiplexer (HTTP/gRPC on same port).
+    - **`core`**: Configuration/Environment loading.
+
+## 3. Development Workflow (How to implement features)
+
+To add a new feature (e.g., "Product"):
+
+1.  **Domain (Entities)**: Create `internal/domain/entities/product.go`. Define the struct.
+2.  **Domain (Ports)**: Create `internal/domain/ports/product_repo_iface.go`. Define `IProductRepository`.
+3.  **Infrastructure (Repository)**: Create `internal/infrastructure/adapters/repository/mongo/product_impl.go`. Implement `IProductRepository`.
+    -   *Rule*: Use `tracer.GetTracer()` to start spans.
+    -   *Rule*: Use `dbg.GetLogger()` for logging errors.
+4.  **Implementation (Service)**: Create `internal/implementation/product/product_service.go`. Implement business logic.
+5.  **Infrastructure (Driver/Handler)**: Create/Update `internal/infrastructure/driver/rest/product_handler.go`.
+    -   Use `fiber.Ctx`.
+    -   Map errors to appropriate HTTP status codes.
+6.  **Wiring (`main.go`)**:
+    -   Initialize Repository.
+    -   Initialize Service (injecting Repository).
+    -   Initialize Handler (injecting Service).
+    -   Register Routes.
+
+## 4. Coding Standards & Best Practices
+
+-   **Context**: Always propagate `context.Context` as the first argument in Services and Repositories.
+-   **Tracing**: Instrumented code is mandatory.
+    ```go
+    ctx, span := tracer.GetTracer().Start(ctx, "Layer/Entity/Method")
+    defer span.End()
+    ```
+-   **Logging**: Use the centralized logger.
+    ```go
+    log := dbg.GetLogger()
+    log.Errorw("message", "key", value)
+    ```
+-   **Configuration**: Add new env vars in `internal/domain/envs.go`.
+-   **Dependency Injection**: Done manually in `main.go`. Do not use reflection-based DI frameworks.
+-   **Multiplexer**: The server uses `cmux`. Ensure handlers start with `Start(listener net.Listener)` to accept the multiplexed listener.
+
+## 5. Key Libraries
+-   **Web**: `github.com/gofiber/fiber/v2`
+-   **DB**: `go.mongodb.org/mongo-driver`
+-   **Logs**: `go.uber.org/zap`
+-   **Trace**: `go.opentelemetry.io/otel`
+
+## 6. AI Interaction Rules
+-   **Read First**: Before modifying `main.go`, read it to understand the current wiring order.
+-   **Consistency**: Follow existing naming conventions (`NameRepository`, `NameService`, `NameHandler`).
+-   **Security**: Do not hardcode secrets. Use the `core.GetEnvironments()` pattern.
+-   **Tests**: If asked to write tests, prefer standard `testing` package or `testify`.
