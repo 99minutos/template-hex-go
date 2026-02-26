@@ -1,0 +1,40 @@
+# Version control
+.git
+.gitignore
+.github
+
+# Environment & secrets (never bake into an image)
+.env
+.env.*
+!.env.example
+
+# IDE / editor
+.vscode
+.idea
+*.iml
+.history
+.DS_Store
+
+# Documentation
+*.md
+CHANGELOG.template.md
+
+# CI / build tooling (not needed inside the container)
+Makefile
+build/
+sonar-project.properties
+
+# Test & coverage artifacts
+*.test
+*.out
+coverage.out
+
+# Debug binaries
+__debug*
+
+# Docker files themselves
+docker/
+docker-compose*.yml
+
+# Dependency vendor (if ever added)
+vendor/

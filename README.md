@@ -1,215 +1,226 @@
-# :writing_hand: <service-name>
+# `<service-name>`
 
 Microservice designed to control 99minutos something
 
 ## Table of Contents
 
-- [:writing\_hand: ](#writing_hand-)
-    - [Table of Contents](#table-of-contents)
-    - [Requirements](#requirements)
-        - [Install Go](#install-go)
-    - [Start](#start)
-    - [Built with](#built-with)
-    - [Structure](#structure)
-    - [Infrastructure dependencies](#infrastructure-dependencies)
-        - [Docker](#docker)
-        - [Launch services](#launch-services)
-        - [Rebuild app](#rebuild-app)
-    - [Data Model](#data-model)
-    - [Changelog](#changelog)
+- [Requirements](#requirements)
+- [Getting started](#getting-started)
+    - [Local (without Docker)](#local-without-docker)
+    - [With Docker (recommended)](#with-docker-recommended)
+- [Available commands](#available-commands)
+- [API endpoints](#api-endpoints)
+- [Built with](#built-with)
+- [Structure](#structure)
+- [Infrastructure dependencies](#infrastructure-dependencies)
+- [Changelog](#changelog)
+
+---
 
 ## Requirements
 
-| Software | Version |
-|:---------|:--------|
-| Go       | 1.23.X  |
+| Software       | Version |
+|:---------------|:--------|
+| Go             | 1.24.x  |
+| Docker         | 24+     |
+| Docker Compose | v2      |
 
 ### Install Go
 
-Windows
-
+**Windows**
 ```shell
 choco install golang
 ```
 
-Debian based
-
+**Debian / Ubuntu**
 ```shell
 apt install golang-go
 ```
 
-Mac OS X
-
+**macOS**
 ```shell
 brew install go
 ```
 
-Other installation methods: [Download Golang](https://go.dev/dl/)
+Other methods: [Download Golang](https://go.dev/dl/)
 
-## Start
+---
 
-1. Clone this project
-2. Configure your environment variables ".env" file, you can use the ".env.example" file as a guide
-3. Execute the following command to download the dependencies
+## Getting started
 
-    ```shell
-    go mod tidy
-    ```
+### Local (without Docker)
 
-4. For run the project execute the following command
-
-    ```shell
-    go run cmd/<service-name>/main.go
-    ```
-
-5. Happy hacking :D
-
-## Start with docker
-
-1. Install docker v24.0.2 [how to install?](https://docs.docker.com/engine/install/)
-2. Install docker compose v2.18.1 [how to install?](https://docs.docker.com/compose/install/)
-3. Clone this project
-4. Copy environment configuration
+1. Clone this project.
+2. Copy and configure environment variables:
     ```shell
     cp .env.example .env
     ```
-5. Execute the project with the following command
-
+3. Download dependencies:
     ```shell
-    docker-compose up -d
+    make tidy
     ```
-6. Run mongodb seeders. Note: this command will execute the seeders in a default mongo db called `app`
+4. Run the service:
     ```shell
-    make mongodb-seeders
+    make run
     ```
-   if you want to customize the mongo db name (if you change MONGO_DATABASE in .env file), you can use the following
-   command
+
+### With Docker (recommended)
+
+1. Install [Docker](https://docs.docker.com/engine/install/) and [Docker Compose v2](https://docs.docker.com/compose/install/).
+2. Clone this project.
+3. Copy and configure environment variables:
     ```shell
-    make mongodb-seeders MONGO_DATABASE=<your-db-name>
+    cp .env.example .env
     ```
-7. For next steps see [Trying the service (only for docker)](#trying-the-service-only-for-docker)
+4. Start all services (app + MongoDB + Redis):
+    ```shell
+    make up
+    ```
+5. To stop all containers:
+    ```shell
+    make down
+    ```
 
-### Trying the service (only for docker)
+---
 
-with makefile
+## Available commands
+
+Run `make help` to see the full list. Key targets:
+
+| Command            | Description                                 |
+|:-------------------|:--------------------------------------------|
+| `make run`         | Run the app locally (outside container)     |
+| `make fmt`         | Format all Go source files                  |
+| `make tidy`        | Tidy and verify Go module dependencies      |
+| `make vet`         | Run `go vet` on local source                |
+| `make lint`        | Run `golangci-lint` (must be installed)     |
+| `make test`        | Run tests locally with coverage             |
+| `make coverage`    | Open HTML coverage report in browser        |
+| `make up`          | Start all Docker services (with build)      |
+| `make down`        | Stop and remove containers                  |
+| `make build`       | Build Docker images                         |
+| `make logs`        | Tail logs from all containers               |
+| `make ps`          | List running containers                     |
+| `make docker-test` | Run tests inside the container              |
+| `make docker-vet`  | Run `go vet` inside the container           |
+
+---
+
+## API endpoints
+
+Base URL: `http://localhost:8080`
+
+### Health check
 
 ```shell
-make testing-service
+curl http://localhost:8080/api/v1/health
 ```
 
-expected output
+Expected response:
 
-```bash
-============================================================
-Creating new order...
-
-{"id":"6560ec6df49b452dade3e61e","first_name":"John","last_name":"Doe","sub_example":{"sub_example_id":123,"sub_example_name":"subExampleName"}}
-============================================================
-Searching order from seeder
-
-{"id":"656045095ff16ef1a00fd4ef","first_name":"John","last_name":"Doe","sub_example":{"sub_example_id":123,"sub_example_name":"subExampleName"}}
-============================================================
+```json
+{"status": "ok"}
 ```
 
-Or step by step
-
-Create Example Order
+### Create example order
 
 ```shell
-curl --location --request POST '127.0.0.1:8080/api/v1/order/create'
+curl -X POST http://localhost:8080/api/v1/order/create
 ```
 
-Retrieve Example Order
+### Get example order
 
 ```shell
-curl --location '127.0.0.1:8080/api/v1/order/656045095ff16ef1a00fd4ef'
+curl http://localhost:8080/api/v1/order/<trackingId>
 ```
+
+---
 
 ## Built with
 
-- [IntelliJ Ultimate with go plugin ( recommended )](https://www.jetbrains.com/idea/)
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Zed](https://zed.dev/)
+- [IntelliJ Ultimate with Go plugin](https://www.jetbrains.com/idea/)
+
+---
 
 ## Structure
 
-```shell
+```
 <service-name>
 .
-├── build
-│   └── cloudbuild.yaml
+├── .dockerignore
+├── .env.example
+├── AGENTS.md
 ├── CHANGELOG.md
-├── CHANGELOG.template.md
+├── Makefile
+├── build
+│   └── cloudbuild.yaml
 ├── cmd
-│   └── service
-│       └── main.go
+│   └── service
+│       └── main.go
 ├── docker
-│   ├── Dockerfile
-│   └── Dockerfile.dev
+│   ├── Dockerfile
+│   └── Dockerfile.dev
 ├── docker-compose.yml
 ├── go.mod
 ├── go.sum
-├── internal
-│   ├── domain
-│   │   ├── entities
-│   │   │   └── example.go
-│   │   ├── envs.go
-│   │   ├── errcodes
-│   │   │   └── errcodes.go
-│   │   ├── ports
-│   │   │   └── example_repo_iface.go
-│   │   ├── pubsub.go
-│   │   └── server
-│   │       ├── error.go
-│   │       └── pagination.go
-│   ├── helpers
-│   │   └── shortcodes
-│   │       └── validate.go
-│   ├── implementation
-│   │   └── example
-│   │       └── example_impl.go
-│   └── infrastructure
-│       ├── adapters
-│       │   └── repository
-│       │       └── mongo
-│       │           ├── order_impl.go
-│       │           └── seeders
-│       │               └── examples.json
-│       ├── driven
-│       │   ├── cmux
-│       │   │   └── cmux.go
-│       │   ├── core
-│       │   │   └── envs.go
-│       │   ├── dbg
-│       │   │   └── logger.go
-│       │   ├── fiber_server
-│       │   │   ├── fiber_error.go
-│       │   │   └── fiber.go
-│       │   ├── mongodb
-│       │   │   └── mongodb.go
-│       │   ├── redis
-│       │   │   └── cache.go
-│       │   ├── tracer
-│       │   │   └── tracer.go
-│       │   └── validation
-│       │       └── validate.go
-│       └── driver
-│           ├── grpc
-│           │   ├── domain_to_grpc.go
-│           │   ├── handlers.go
-│           │   └── server.go
-│           └── rest
-│               └── handlers.go
-├── Makefile
-└── README.md
-
-
+└── internal
+    ├── domain
+    │   ├── entities
+    │   │   └── example.go
+    │   ├── envs.go
+    │   ├── errcodes
+    │   │   └── errcodes.go
+    │   ├── ports
+    │   │   └── example.go
+    │   ├── pubsub.go
+    │   └── server
+    │       ├── error.go
+    │       └── pagination.go
+    ├── helpers
+    │   └── shortcodes
+    │       └── validate.go
+    ├── implementation
+    │   └── example
+    │       └── example_service.go
+    └── infrastructure
+        ├── adapters
+        │   └── repository
+        │       └── mongo
+        │           ├── order.go
+        │           └── seeders
+        │               └── examples.json
+        ├── driven
+        │   ├── cmux
+        │   │   └── cmux.go
+        │   ├── core
+        │   │   └── envs.go
+        │   ├── dbg
+        │   │   └── logger.go
+        │   ├── fiber_server
+        │   │   ├── fiber.go
+        │   │   └── fiber_error.go
+        │   ├── mongodb
+        │   │   └── mongodb.go
+        │   ├── redis
+        │   │   └── cache.go
+        │   ├── tracer
+        │   │   └── tracer.go
+        │   └── validation
+        │       └── validate.go
+        └── driver
+            ├── grpc
+            │   ├── domain_to_grpc.go
+            │   ├── handlers.go
+            │   └── server.go
+            └── rest
+                └── handlers.go
 ```
 
 ### Domain
 
-The domain layer encapsulates the application's business logic, integrating data entities and ports that abstract this
-logic.
+The domain layer encapsulates the application's business logic, integrating data entities and ports that abstract this logic.
 
 ### Implementation
 
@@ -220,7 +231,23 @@ through concrete implementations and interfacing with external systems and manag
 
 ### Infrastructure
 
-The architecture layer in software design provides the structural blueprint for the application. It outlines how various
-components such as the domain, implementation, and presentation layers interact and are organized. This layer focuses on
-aspects like scalability, maintainability, and technology stack, ensuring that the application's overall structure
-supports its requirements and goals.
+The infrastructure layer provides the structural blueprint for the application. It outlines how the domain,
+implementation, and presentation layers interact and are organized, focusing on scalability, maintainability, and
+technology stack.
+
+---
+
+## Infrastructure dependencies
+
+| Service | Image                 | Port  |
+|:--------|:----------------------|:------|
+| MongoDB | `mongo:7.0`           | 27017 |
+| Redis   | `redis:6.2.13-alpine` | 6379  |
+
+Both services are declared in `docker-compose.yml` and start automatically with `make up`.
+
+---
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
