@@ -34,8 +34,8 @@
 To add a new feature (e.g., "Product"):
 
 1.  **Domain (Entities)**: Create `internal/domain/entities/product.go`. Define the struct.
-2.  **Domain (Ports)**: Create `internal/domain/ports/product_repo_iface.go`. Define `IProductRepository`.
-3.  **Infrastructure (Repository)**: Create `internal/infrastructure/adapters/repository/mongo/product_impl.go`. Implement `IProductRepository`.
+2.  **Domain (Ports)**: Create `internal/domain/ports/product.go`. Define `IProductRepository`.
+3.  **Infrastructure (Repository)**: Create `internal/infrastructure/adapters/repository/mongo/product.go`. Implement `IProductRepository`.
     -   *Rule*: Use `tracer.GetTracer()` to start spans.
     -   *Rule*: Use `dbg.GetLogger()` for logging errors.
 4.  **Implementation (Service)**: Create `internal/implementation/product/product_service.go`. Implement business logic.
