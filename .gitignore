@@ -38,3 +38,9 @@ gen
 notas.md
 __debug*
 github-user.sh
+
+# AI assistant files
+CLAUDE.md
+GEMINI.md
+.claude/*
+.gemini/*
