@@ -76,3 +76,11 @@ To add a new feature (e.g., "Product"):
 -   **Consistency**: Follow existing naming conventions (`NameRepository`, `NameService`, `NameHandler`).
 -   **Security**: Do not hardcode secrets. Use the `core.GetEnvironments()` pattern.
 -   **Tests**: If asked to write tests, prefer standard `testing` package or `testify`.
+
+## 7. Business Context & PROJECT.md
+-   **Reference**: Always read `PROJECT.md` as the authoritative source of business rules, domain definitions, and constraints before implementing any feature or change.
+-   **Conflict detection**: If a request contradicts or goes against what is defined in `PROJECT.md`, **warn the user explicitly** before proceeding. Describe the conflict and ask whether they want to:
+    1.  Proceed anyway (overriding the business rule), or
+    2.  Cancel the change.
+-   **Explicit override exception**: If the user's request is explicit about wanting to change something that contradicts the business rules (e.g., "I know this goes against the current model, do it anyway"), proceed without asking — but still note the conflict briefly.
+-   **Keep PROJECT.md up to date**: Whenever a change is made that alters or extends the business domain (new entities, modified rules, new constraints, changed flows), update `PROJECT.md` to reflect those changes. The file must always represent the current state of the business.
